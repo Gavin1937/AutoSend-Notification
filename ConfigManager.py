@@ -10,7 +10,17 @@ class ConfigManager:
         logger.info("Constructing ConfigManager object...")
         self.__config = ConfigParser()
         logger.info("Constructed self.__config")
-        if os.path.exists("./config.ini\n") and os.path.getsize("./config.ini\n") > 0:
+        config_file_exist_flag = False
+        config_file_has_size_flag = False
+        try:
+            if os.path.exists(os.getcwd()+"/config.ini"):
+                config_file_exist_flag = True
+            if os.path.getsize(os.getcwd()+"/config.ini") > 0:
+                config_file_has_size_flag = True
+        except:
+            config_file_exist_flag = False
+            config_file_has_size_flag = False
+        if not config_file_exist_flag and not config_file_has_size_flag:
             logger.info("Cannot find config.ini, create & write basic info to a new file")
             self.write_basic_info2Config()
         else:
@@ -25,7 +35,9 @@ class ConfigManager:
         }
         self.__config["notification_time"] = {
             "week_day": "2", # Wednesday
-            "hour": "12"
+            "hour": "12",
+            "min": "0",
+            "sec": "0"
         }
         with open("./config.ini", "w") as file:
             self.__config.write(file)
@@ -65,3 +77,9 @@ class ConfigManager:
     
     def getNotificationTime_hr(self):
         return int(self.__config.get("notification_time", "hour"))
+    
+    def getNotificationTime_min(self):
+        return int(self.__config.get("notification_time", "min"))
+    
+    def getNotificationTime_sec(self):
+        return int(self.__config.get("notification_time", "sec"))

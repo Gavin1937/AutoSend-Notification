@@ -25,19 +25,24 @@ def main():
         logger.info("Constructing timemonitor")
         timemonitor = TimeMonitor.TimeMonitor()
         logger.info("Finish timemonitor")
+        
         logger.info("Constructing contact")
         contact = Contact.Contact()
         logger.info("Finish contact")
+        
         logger.info("Constructing sch")
         sch = Schedule.Schedule("1FUdVpQe8WYOcYyFWFrbVJSvhVwqskRGL_8kYZCfgci4", "Sheet1!A1:H", 
                                 timemonitor.getDateTimeObj())
         logger.info("Finish sch")
+        
         logger.info("Constructing email")
         email = EmailSender.EmailSender("gyh2060411551gyh@gmail.com", "gyh1999037gyh.gmail2")
         logger.info("Finish email")
+        
         logger.info("Constructing config")
         config = ConfigManager.ConfigManager()
         logger.info("Finish config")
+        
     except Exception as err:
         print(err)
         logger.warning("Something is wrong during declaration. Exception: %s" % str(err))
@@ -58,14 +63,18 @@ def main():
         
         wkDay = config.getNotificationTime_wkDay()
         hr = config.getNotificationTime_hr()
+        min = config.getNotificationTime_min()
+        sec = config.getNotificationTime_sec()
         
-        time_to_send_notification = (                                                       # conditions 
-                                        timemonitor.hasInternetConnection() and             # currently has internet connection
-                                        timemonitor.hasTime() and                           # currently timemonitor has datetime value
-                                        whether_sent_curr_wk_email == False and             # haven't send this week's email
-                                        timemonitor.getDateTimeObj().weekday() == wkDay and # today is Wednesday
-                                        #! timemonitor.getDateTimeObj().hour >= hr             # current time is >= noon
-                                        timemonitor.getDateTimeObj().hour >= 0              # current time is >= noon
+        time_to_send_notification = (                                                        # conditions 
+                                        timemonitor.hasInternetConnection() and              # currently has internet connection
+                                        timemonitor.hasTime() and                            # currently timemonitor has datetime value
+                                        whether_sent_curr_wk_email == False and              # haven't send this week's email
+                                        timemonitor.getDateTimeObj().weekday() == wkDay and  # today is Wednesday
+                                        #! timemonitor.getDateTimeObj().hour >= hr and          # current time is >= noon
+                                        timemonitor.getDateTimeObj().hour >= 0 and           # current time hr >= 0
+                                        timemonitor.getDateTimeObj().minute >= min and       # current time min >= 0
+                                        timemonitor.getDateTimeObj().second >= sec           # current time sec >= 0
                                     )
         if time_to_send_notification:
             print("Prepare to send email...")
