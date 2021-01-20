@@ -18,6 +18,9 @@ def main():
     locale.setlocale(locale.LC_ALL, '')
     logger.info("Set locale")
     
+    # prompt user for basic infos use in declaration part
+    # TODO: add prompt
+    
     # declaration
     print("Initializing program...")
     logger.info("Initializing program...")
@@ -90,17 +93,21 @@ def main():
             logger.info("Find people to contact for emails")
             
             # generate messages for people
-            sermon_person_msg = getFullEmailMsg(getSermonMsg(sermon_person["refer_name"]), "(132) 456-789")
-            worship_person_msg = getFullEmailMsg(getWorshipMsg(worship_person["refer_name"]), "(132) 456-789")
+            if sermon_person != None:
+                sermon_person_msg = getFullEmailMsg(getSermonMsg(sermon_person["refer_name"]), "(132) 456-789")
+            if worship_person != None:
+                worship_person_msg = getFullEmailMsg(getWorshipMsg(worship_person["refer_name"]), "(132) 456-789")
             logger.info("Generate messages for people")
             
             # send email
             try:
                 logger.info("Trying to send email")
-                email.sendEmail(sermon_person["email"], "GCDC auto sent sermon notification", sermon_person_msg)
-                logger.info("Sent email to preacher")
-                email.sendEmail(worship_person["email"], "GCDC auto sent worship notification", worship_person_msg)
-                logger.info("Sent email to worship leader")
+                if sermon_person != None:
+                    email.sendEmail(sermon_person["email"], "GCDC auto sent sermon notification", sermon_person_msg)
+                    logger.info("Sent email to preacher")
+                if worship_person != None:
+                    email.sendEmail(worship_person["email"], "GCDC auto sent worship notification", worship_person_msg)
+                    logger.info("Sent email to worship leader")
                 whether_sent_curr_wk_email = True
                 print("All emails sent")
                 logger.info("Successfully sent email")
