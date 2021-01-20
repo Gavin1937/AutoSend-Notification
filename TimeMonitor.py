@@ -17,11 +17,11 @@ class TimeMonitor:
         # get utc time from url & check internet connection
         try:
             res = urlopen('http://just-the-time.appspot.com/')
-            self.__internet_connection = True
+            self.__internet_connection_flag = True
         except:
-            self.__internet_connection = False
+            self.__internet_connection_flag = False
         
-        if self.__internet_connection == True:
+        if self.__internet_connection_flag == True:
             result = res.read().strip()
             result_str = result.decode('utf-8')
             
@@ -35,25 +35,25 @@ class TimeMonitor:
             self.__pdt_time = self.__pdt_time - timedelta(hours=8)
             
             # set has_time flag
-            self.__time = True
+            self.__time_flag = True
     
     
     # getters
     
     def getDateTimeObj(self):
-        if self.__internet_connection == True:
+        if self.__internet_connection_flag == True:
             return self.__pdt_time
     
     def getDateTimeStr(self):
-        if self.__internet_connection == True:
+        if self.__internet_connection_flag == True:
             return self.__pdt_time.isoformat()
     
     def getDateTimeStr_ctime(self):
-        if self.__internet_connection == True:
+        if self.__internet_connection_flag == True:
             return self.__pdt_time.ctime()
     
     def hasInternatConnection(self):
-        return self.__internet_connection
+        return self.__internet_connection_flag
     
     def hasTime(self):
-        return self.__time
+        return self.__time_flag
