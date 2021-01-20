@@ -1,7 +1,7 @@
 import re # regex
 import datetime as datetime
 
-# google spread sheets APIs
+# google APIs
 from googleapiclient.discovery import build
 from google.oauth2 import service_account
 
