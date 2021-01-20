@@ -1,6 +1,7 @@
 import locale
 import datetime
 import time
+import sys
 
 # additional modules
 import TimeMonitor
@@ -8,6 +9,7 @@ import Contact
 import Schedule
 import EmailSender
 from MsgGenerator import *
+import ConfigManager
 
 
 def main():
@@ -22,10 +24,11 @@ def main():
         sch = Schedule.Schedule("1FUdVpQe8WYOcYyFWFrbVJSvhVwqskRGL_8kYZCfgci4", "Sheet1!A1:H", 
                                 timemonitor.getDateTimeObj())
         email = EmailSender.EmailSender("gyh2060411551gyh@gmail.com", "gyh1999037gyh.gmail2")
+        config = ConfigManager.ConfigManager()
     except Exception as err:
         print(err)
-        SystemExit(1)
-    whether_sent_curr_wk_email = False
+        sys.exit(1)
+    whether_sent_curr_wk_email = config.getWeeklyEmailCondition_bool()
     
     
     # main loop
@@ -33,14 +36,19 @@ def main():
         # check current time
         print("checking current time & internet connection...")
         timemonitor.updateObj()
+        config.write2config("settings", "internet_connection", 
+                            "true" if timemonitor.hasInternetConnection() else "false")
         
-        time_to_send_notification = (                                                   # conditions 
-                                        timemonitor.hasInternetConnection() and         # currently has internet connection
-                                        timemonitor.hasTime() and                       # currently timemonitor has datetime value
-                                        whether_sent_curr_wk_email == False and         # haven't send this week's email
-                                        timemonitor.getDateTimeObj().weekday() == 2 and # today is Wednesday
-                                        # timemonitor.getDateTimeObj().hour >= 12         # current time is >= noon
-                                        timemonitor.getDateTimeObj().hour >= 0         # current time is >= noon
+        wkDay = config.getNotificationTime_wkDay()
+        hr = config.getNotificationTime_hr()
+        
+        time_to_send_notification = (                                                       # conditions 
+                                        timemonitor.hasInternetConnection() and             # currently has internet connection
+                                        timemonitor.hasTime() and                           # currently timemonitor has datetime value
+                                        whether_sent_curr_wk_email == False and             # haven't send this week's email
+                                        timemonitor.getDateTimeObj().weekday() == wkDay and # today is Wednesday
+                                        #! timemonitor.getDateTimeObj().hour >= hr             # current time is >= noon
+                                        timemonitor.getDateTimeObj().hour >= 0              # current time is >= noon
                                     )
         if time_to_send_notification:
             print("prepare to send email...")
@@ -59,8 +67,8 @@ def main():
             
             # send email
             try:
-                email.sendEmail(email.getEmailAddr(), "GCDC auto notification system", sermon_person_msg)
-                email.sendEmail(email.getEmailAddr(), "GCDC auto notification system", worship_person_msg)
+                email.sendEmail(sermon_person["email"], "GCDC auto sent sermon notification", sermon_person_msg)
+                email.sendEmail(worship_person["email"], "GCDC auto sent worship notification", worship_person_msg)
                 whether_sent_curr_wk_email = True
                 print("email sent!")
             except Exception as err:
