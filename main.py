@@ -71,8 +71,7 @@ def main():
                                         timemonitor.hasTime() and                            # currently timemonitor has datetime value
                                         whether_sent_curr_wk_email == False and              # haven't send this week's email
                                         timemonitor.getDateTimeObj().weekday() == wkDay and  # today is Wednesday
-                                        #! timemonitor.getDateTimeObj().hour >= hr and          # current time is >= noon
-                                        timemonitor.getDateTimeObj().hour >= 0 and           # current time hr >= 0
+                                        timemonitor.getDateTimeObj().hour >= hr and          # current time is >= noon
                                         timemonitor.getDateTimeObj().minute >= min and       # current time min >= 0
                                         timemonitor.getDateTimeObj().second >= sec           # current time sec >= 0
                                     )
