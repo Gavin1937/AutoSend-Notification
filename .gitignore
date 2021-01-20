@@ -1,0 +1,6 @@
+# Targets Windows & Unix temporary files
+~$*
+*~
+
+/contact_list.json
+/__pycache__/
