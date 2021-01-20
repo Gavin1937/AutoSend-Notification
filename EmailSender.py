@@ -1,4 +1,6 @@
 import smtplib
+from email.mime.multipart import MIMEMultipart
+from email.mime.text import MIMEText
 
 # This class is created with tutorial from:
 # YouTube Video: https://www.youtube.com/watch?v=mP_Ln-Z9-XY
@@ -6,6 +8,10 @@ class EmailSender:
     
     # constructor
     def __init__(self, email_addr, password):
+        # declare
+        self.__email_addr = None
+        self.__email_password = None
+        self.__server = None
         try:
             self.setServer(email_addr, password)
         except Exception as err:
@@ -34,7 +40,7 @@ class EmailSender:
         try:
             if to_email_addr != None and email_subj != None and email_msg != None:
                 whole_email_msg = "Subject: {}\n\n{}".format(email_subj, email_msg)
-                self.__server.sendmail(self.__email_addr, to_email_addr, whole_email_msg)
+                self.__server.sendmail(self.__email_addr, to_email_addr, whole_email_msg.encode("utf8"))
         except Exception as err:
             raise err
     

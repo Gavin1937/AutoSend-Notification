@@ -8,6 +8,11 @@ class TimeMonitor:
     
     # constructor
     def __init__(self):
+        # declare
+        self.__internet_connection_flag = None
+        self.__time_flag = None
+        self.__pdt_time = None
+        # update object
         self.updateObj()
     
     # update time and all other boolean flags
@@ -52,7 +57,7 @@ class TimeMonitor:
         if self.__internet_connection_flag == True:
             return self.__pdt_time.ctime()
     
-    def hasInternatConnection(self):
+    def hasInternetConnection(self):
         return self.__internet_connection_flag
     
     def hasTime(self):

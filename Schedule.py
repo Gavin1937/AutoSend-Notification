@@ -14,6 +14,8 @@ class Schedule:
         self.__spreadsheet_id = spreadsheet_id
         self.__spreadsheet_range = spreadsheet_range
         self.__curr_date = current_date
+        self.__curr_column = None
+        self.__values = None
         
         self.updateSpreadsheet()
     
@@ -42,7 +44,6 @@ class Schedule:
         sheet = service.spreadsheets()
         result = sheet.values().get(spreadsheetId=SAMPLE_SPREADSHEET_ID,
                                     range=self.__spreadsheet_range).execute()
-                                    # range="Sheet1!A1:H").execute()
         
         # get 2d arr from spreadsheets
         self.__values = result.get("values", [])
