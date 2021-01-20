@@ -116,12 +116,9 @@ def main():
                 logger.warning("Fail to send email. Exception: %s" % str(err))
             
         else:
-            logger.info("No more task now, sleep for 5 sec")
-            print("sleeping %s" % timemonitor.getDateTimeObj().time())
-            time.sleep(5)
-            # logger.info("No more task now, sleep for 6 hr")
-            # time.sleep(21600) # sleep for 6 hr
-            print("5 sec later")
+            print("sleeping for %s seconds" % config.getSleepTimeSec_int())
+            logger.info("No more task now, sleep for %s sec" % config.getSleepTimeSec_int())
+            time.sleep(config.getSleepTimeSec_int())
 
 
 if __name__ == "__main__":

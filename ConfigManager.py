@@ -31,7 +31,8 @@ class ConfigManager:
     def write_basic_info2Config(self):
         self.__config["settings"] = {
             "internet_connection": "false",
-            "sent_weekly_email": "false"
+            "sent_weekly_email": "false",
+            "sleep_time_sec": "21600"
         }
         self.__config["notification_time"] = {
             "week_day": "2", # Wednesday
@@ -68,6 +69,9 @@ class ConfigManager:
     
     def getInternetConnection_bool(self):
         return self.__config.getboolean("settings", "internet_connection")
+    
+    def getSleepTimeSec_int(self):
+        return self.__config.getint("settings", "sleep_time_sec")
     
     def getNotificationTime(self):
         return self.__config.items("notification_time")
