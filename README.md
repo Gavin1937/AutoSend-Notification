@@ -7,11 +7,15 @@ This program will send notification through Gmail automatically every week.
 You can modify the day to send notification in program generated config.ini file.
 
 ```
+[settings]
+sleep_time_sec = 21600  // sleep for how long, in second, before next time & internet checking
+
+
 [notification_time]
-week_day = 2        // week day to send email, from Mon~Sun (0~6)
-hour = 12           // send email at which hour, from 0~23
-min = 0             // send email at which min, from 0~59
-sec = 0             // send email at which sec, from 0~59
+week_day = 2            // week day to send email, from Mon~Sun (0~6)
+hour = 12               // send email at which hour, from 0~23
+min = 0                 // send email at which min, from 0~59
+sec = 0                 // send email at which sec, from 0~59
 ```
 
 <br>
