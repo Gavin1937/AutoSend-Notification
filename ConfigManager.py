@@ -1,15 +1,20 @@
 from configparser import ConfigParser
 import os
+from My_Logger import *
 
 
 class ConfigManager:
     
     # default constructor
     def __init__(self):
+        logger.info("Constructing ConfigManager object...")
         self.__config = ConfigParser()
+        logger.info("Constructed self.__config")
         if os.path.exists("./config.ini\n") and os.path.getsize("./config.ini\n") > 0:
+            logger.info("Cannot find config.ini, create & write basic info to a new file")
             self.write_basic_info2Config()
         else:
+            logger.info("Found config.ini, read from it")
             self.__config.read("./config.ini")
     
     # writting to config.ini

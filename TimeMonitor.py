@@ -3,16 +3,19 @@ from datetime import datetime, timedelta
 from pytz import timezone
 import pytz
 
+from My_Logger import *
 
 class TimeMonitor:
     
     # constructor
     def __init__(self):
+        logger.info("Constructing TimeMonitor object...")
         # declare
         self.__internet_connection_flag = None
         self.__time_flag = None
-        self.__pdt_time = None
+        self.__pst_time = None
         # update object
+        logger.info("Updating TimeMonitor object")
         self.updateObj()
     
     # update time and all other boolean flags
@@ -21,10 +24,13 @@ class TimeMonitor:
         
         # get utc time from url & check internet connection
         try:
+            logger.info("Trying to open url to check time & internet connection")
             res = urlopen('http://just-the-time.appspot.com/')
             self.__internet_connection_flag = True
+            logger.info("Successfully open url to check time & internet connection")
         except:
             self.__internet_connection_flag = False
+            logger.warning("Fail to open url to check time & internet connection")
         
         if self.__internet_connection_flag == True:
             result = res.read().strip()
@@ -34,28 +40,30 @@ class TimeMonitor:
             date_time_obj = datetime.strptime(result_str, '%Y-%m-%d %H:%M:%S')
             
             # set timezone
-            self.__pdt_time = date_time_obj.astimezone(timezone('US/Pacific'))
+            self.__pst_time = date_time_obj.astimezone(timezone('US/Pacific'))
             
             # Subtract 8 hours
-            self.__pdt_time = self.__pdt_time - timedelta(hours=8)
+            self.__pst_time = self.__pst_time - timedelta(hours=8)
             
             # set has_time flag
             self.__time_flag = True
+            
+            logger.info("Converted utc time to US/Pacific (PST) time")
     
     
     # getters
     
     def getDateTimeObj(self):
         if self.__internet_connection_flag == True:
-            return self.__pdt_time
+            return self.__pst_time
     
     def getDateTimeStr(self):
         if self.__internet_connection_flag == True:
-            return self.__pdt_time.isoformat()
+            return self.__pst_time.isoformat()
     
     def getDateTimeStr_ctime(self):
         if self.__internet_connection_flag == True:
-            return self.__pdt_time.ctime()
+            return self.__pst_time.ctime()
     
     def hasInternetConnection(self):
         return self.__internet_connection_flag

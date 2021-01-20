@@ -5,19 +5,27 @@ import datetime as datetime
 from googleapiclient.discovery import build
 from google.oauth2 import service_account
 
+# logger
+from My_Logger import *
 
 
 class Schedule:
     
     # constructor
     def __init__(self, spreadsheet_id, spreadsheet_range, current_date):
+        logger.info("Constructing Schedule object...")
         self.__spreadsheet_id = spreadsheet_id
         self.__spreadsheet_range = spreadsheet_range
         self.__curr_date = current_date
         self.__curr_column = None
         self.__values = None
         
-        self.updateSpreadsheet()
+        try:
+            logger.info("Trying to update Google spreadsheet")
+            self.updateSpreadsheet()
+        except Exception as err:
+            logger.warning("Fail to update Google spreadsheet. Exception: %s" % str(err))
+            raise err
     
     
     # update spreadsheet
@@ -29,25 +37,44 @@ class Schedule:
         SCOPES = ["https://www.googleapis.com/auth/spreadsheets.readonly"]
         
         # create credential w/ file
-        creds = None
-        creds = service_account.Credentials.from_service_account_file(
-                        SERVICE_ACCOUNT_FILE, scopes=SCOPES)
+        try:
+            logger.info("Trying to create credential with credential_key.json")
+            creds = None
+            creds = service_account.Credentials.from_service_account_file(
+                            SERVICE_ACCOUNT_FILE, scopes=SCOPES)
+        except Exception as err:
+            logger.warning("Fail to create credential with credential_key.json. Exception: %s" % str(err))
+            raise err
         
         # spreadsheet ID
         # SAMPLE_SPREADSHEET_ID = "1FUdVpQe8WYOcYyFWFrbVJSvhVwqskRGL_8kYZCfgci4"
         SAMPLE_SPREADSHEET_ID = self.__spreadsheet_id
         
         # open spreadsheet
-        service = build("sheets", "v4", credentials=creds)
+        try:
+            logger.info("Trying to open spreadsheet")
+            service = build("sheets", "v4", credentials=creds)
+            logger.info("Successfully open spreadsheet")
+        except Exception as err:
+            logger.warning("Fail to open spreadsheet. Exception: %s" % str(err))
+            raise err
         
         # Call the Sheets API
-        sheet = service.spreadsheets()
-        result = sheet.values().get(spreadsheetId=SAMPLE_SPREADSHEET_ID,
-                                    range=self.__spreadsheet_range).execute()
+        try:
+            logger.info("Trying to get data from spreadsheet")
+            sheet = service.spreadsheets()
+            result = sheet.values().get(spreadsheetId=SAMPLE_SPREADSHEET_ID,
+                                        range=self.__spreadsheet_range).execute()
+            logger.info("Successfully get data from spreadsheet")
+        except Exception as err:
+            logger.warning("Fail to get data from spreadsheet. Exception: %s" % str(err))
+            raise err
         
         # get 2d arr from spreadsheets
+        logger.info("Get data as 2-D array")
         self.__values = result.get("values", [])
         
+        logger.info("Finding current year & current column")
         self.__find_curr_year_column()
     
     
@@ -91,6 +118,7 @@ class Schedule:
         year_indicator = "year="
         
         # find year indicator in values
+        logger.info("Finding year indicator in data")
         empty_flag = True
         stop_checking_date_flag = False
         for i in self.__values:
@@ -114,3 +142,4 @@ class Schedule:
                 elif temp_date.date() >= self.__curr_date.date():
                     self.__curr_column = i
                     stop_checking_date_flag = True
+                    logger.info("Found current column. Column date: %s" % i[0])
