@@ -7,7 +7,7 @@ from My_Logger import logger
 class EmailSender:
     
     # constructor
-    def __init__(self, email_addr, password):
+    def __init__(self, email_addr, password, SMTP_server):
         logger.info("Constructing EmailSender object...")
         # declare
         self.__email_addr = None
@@ -15,7 +15,7 @@ class EmailSender:
         self.__server = None
         try:
             logger.info("Setting SMTP server...")
-            self.setServer(email_addr, password)
+            self.setServer(email_addr, password, SMTP_server)
         except Exception as err:
             logger.warning("Something wrong during setting SMTP server. Exception:%s" % str(err))
             raise err
@@ -26,7 +26,7 @@ class EmailSender:
         logger.info("Destruct EmailSender object & Quit from SMTP server")
     
     # set server interface, also can re-login to an email
-    def setServer(self, email_addr, password):
+    def setServer(self, email_addr, password, SMTP_server):
         if email_addr != None:
             self.__email_addr = email_addr
         if password != None:
@@ -34,7 +34,7 @@ class EmailSender:
         try:
             logger.info("Trying to set up SMTP server")
             
-            self.__server = smtplib.SMTP("smtp.gmail.com:587")
+            self.__server = smtplib.SMTP(SMTP_server)
             logger.info("Set up SMTP server domain:port")
             
             self.__server.ehlo()

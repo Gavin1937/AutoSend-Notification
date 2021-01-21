@@ -6,26 +6,27 @@ from My_Logger import logger
 
 # global variables
 user_info_arr = {
-    "contact_person_name": "",
-    "contact_person_number": "",
-    "sender_email_addr": "",
-    "sender_email_password": "",
-    "spreadsheet_id": "",
-    "spreadsheet_range": "",
-    "messages_file_path": ""
+    "contact_person_name": "",          # Who to contact for questions
+    "contact_person_number": "",        # Phone number of this person
+    "sender_email_addr": "",            # Sender Email's address
+    "sender_email_password": "",        # Sender Email's password
+    "spreadsheet_id": "",               # Id of Google Spreadsheet to read
+    "spreadsheet_range": "",            # Range of Google Spreadsheet to read
+    "messages_file_path": ""            # Path to text file that contains all message blocks
 }
 settings_arr = {
-    "internet_connection": "false",
-    "sent_weekly_email": "false",
-    "daily_checking_num": "4" # how many times to check time & internet connection in a day, cannot be 0
+    "internet_connection": "false",     # Whether have internet connection
+    "sent_weekly_email": "false",       # Whether sent current week's email
+    "daily_checking_num": "4",          # how many times to check time & internet connection in a day, cannot be 0
+    "smtp_server": "smtp.gmail.com:587" # SMTP server:port, default to Google
 }
 notification_time_arr = {
-    "update_day": "0", # When to refresh notification flag for a new week, (0 = Monday)
-    "week_day": "2", # When to send notification, (2 = Wednesday)
-    "wkly_noti_after": "43200", # When to send notification, value is in seconds in a day (43200=12pm,12)
-    "no_noti_before": "25200", # Stop sending notification before this time, value is in seconds in a day (25200=7am,7)
-    "no_noti_after": "79200", # Stop sending notification after this time, value is in seconds in a day (79200=10pm,22)
-    "last_notify_time": "" # Record of last notification time, auto set by program
+    "update_day": "0",                  # When to refresh notification flag for a new week, (0 = Monday)
+    "week_day": "2",                    # When to send notification, (2 = Wednesday)
+    "wkly_noti_after": "43200",         # When to send notification, value is in seconds in a day (43200=12pm,12)
+    "no_noti_before": "25200",          # Stop sending notification before this time, value is in seconds in a day (25200=7am,7)
+    "no_noti_after": "79200",           # Stop sending notification after this time, value is in seconds in a day (79200=10pm,22)
+    "last_notify_time": ""              # Record of last notification time, auto set by program
 }
 
 # global functions
@@ -61,6 +62,36 @@ class ConfigManager:
         else:
             logger.info("Found config.ini, read from it")
             self.__config.read("./config.ini")
+    
+    
+    # checking config.ini missing
+    def check_config_missing(self):
+        have_all_config = False
+        missing_configs = list()
+        
+        logger.info("Checking config file")
+        while not have_all_config:
+            logger.info("Reload config.ini")
+            self.__config.read("./config.ini")
+            missing_configs.clear()
+            # check config.ini
+            all_sections = self.__config.sections()
+            for sec in all_sections:
+                all_options = self.__config.options(sec)
+                for opt in all_options:
+                    item = self.__config.get(sec, opt)
+                    if len(item) <= 0 and opt != "last_notify_time":
+                        have_all_config = False
+                        missing_configs.append("[%s], %s" % (sec, opt))
+            if len(missing_configs) == 0:
+                have_all_config = True
+                print("Config file is complete")
+                logger.info("Config file is complete")
+                break
+            # prompt user to fill in config.ini
+            for mis in missing_configs:
+                print("Please fill in missing configuration: %s" % mis)
+            input("Press any key to reload config.ini")
     
     # writting to config.ini
     def write_basic_info2Config(self):
@@ -157,6 +188,9 @@ class ConfigManager:
     
     def getDlyChkNum(self):
         return self.__config.get("settings", "daily_checking_num")
+    
+    def getSMTPserver(self):
+        return self.__config.get("settings", "smtp_server")
     
     def getSleepTimeSec_int(self):
         sec = (24*3600) / self.__config.getint("settings", "daily_checking_num")
