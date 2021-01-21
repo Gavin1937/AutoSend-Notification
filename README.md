@@ -81,9 +81,7 @@ This program will send notification through an email provider (like Gmail) autom
 ### **You need to modify config.ini file for this program**
 
 * Program will auto create a config.ini after you first time run it
-
 * You need to fill in values for all the items thats not **[AutoGenerate]** and have no default value
-
 * **config.ini default values**
 
 ```
