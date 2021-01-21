@@ -155,10 +155,10 @@ def main():
             try:
                 logger.info("Trying to send email")
                 if sermon_person != None:
-                    email.sendEmail(sermon_person["email"], "GCDC auto sent sermon notification", sermon_person_msg)
+                    email.sendEmail(sermon_person["email"], config.getMsgSbj(), sermon_person_msg)
                     logger.info("Sent email to preacher")
                 if worship_person != None:
-                    email.sendEmail(worship_person["email"], "GCDC auto sent worship notification", worship_person_msg)
+                    email.sendEmail(worship_person["email"], config.getMsgSbj(), worship_person_msg)
                     logger.info("Sent email to worship leader")
                 print("All emails sent")
                 whether_sent_curr_wk_email = True

@@ -94,6 +94,7 @@ This program will send notification through an email provider (like Gmail) autom
     sender_email_password =           // Sender Email's password
     spreadsheet_id =                  // Id of Google Spreadsheet to read
     spreadsheet_range =               // Range of Google Spreadsheet to read
+    message_subject =                 // Subject for all auto send emails
     messages_file_path =              // Path to text file that contains all message blocks
 
 [settings]

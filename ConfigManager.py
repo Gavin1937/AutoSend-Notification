@@ -12,6 +12,7 @@ user_info_arr = {
     "sender_email_password": "",        # Sender Email's password
     "spreadsheet_id": "",               # Id of Google Spreadsheet to read
     "spreadsheet_range": "",            # Range of Google Spreadsheet to read
+    "message_subject": "",              # Subject for all auto send emails
     "messages_file_path": ""            # Path to text file that contains all message blocks
 }
 settings_arr = {
@@ -174,6 +175,9 @@ class ConfigManager:
     
     def getSpreadsheetRange(self):
         return self.__config.get("user_info", "spreadsheet_range")
+    
+    def getMsgSbj(self):
+        return self.__config.get("user_info", "message_subject")
     
     def getMsgFilePath(self):
         return self.__config.get("user_info", "messages_file_path")
