@@ -16,10 +16,10 @@ class TimeMonitor:
         self.__pst_time = None
         # update object
         logger.info("Updating TimeMonitor object")
-        self.updateObj()
+        self.updateTime()
     
     # update time and all other boolean flags
-    def updateObj(self):
+    def updateTime(self):
         # update time
         
         # get utc time from url & check internet connection

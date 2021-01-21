@@ -1,9 +1,10 @@
 from configparser import ConfigParser
 import os
-from datetime import datetime
+from datetime import datetime, timedelta
 from My_Logger import *
 
 
+# global variables
 user_info_arr = {
     "contact_person_name": "",
     "contact_person_number": "",
@@ -16,16 +17,26 @@ user_info_arr = {
 settings_arr = {
     "internet_connection": "false",
     "sent_weekly_email": "false",
-    "sleep_time_sec": "21600"
+    "daily_checking_num": "4" # how many times to check time & internet connection in a day, cannot be 0
 }
 notification_time_arr = {
     "update_day": "0", # When to refresh notification flag for a new week, (0 = Monday)
     "week_day": "2", # When to send notification, (2 = Wednesday)
-    "hour": "12", # When to send notification, Wed, 12:min:sec
-    "min": "0", # When to send notification, Wed, 12:00:sec
-    "sec": "0", # When to send notification, Wed, 12:00:00
+    "wkly_noti_after": "43200", # When to send notification, value is in seconds in a day (43200=12pm,12)
+    "no_noti_before": "25200", # Stop sending notification before this time, value is in seconds in a day (25200=7am,7)
+    "no_noti_after": "79200", # Stop sending notification after this time, value is in seconds in a day (79200=10pm,22)
     "last_notify_time": "" # Record of last notification time, auto set by program
 }
+
+# global functions
+def sec2datetime(seconds):
+    sec = timedelta(seconds)
+    return (datetime(1,1,1) + sec)
+
+def datetime2sec(date):
+    sec = (date - date.replace(hour=0, minute=0, second=0, microsecond=0)).total_seconds()
+    return int(sec)
+
 
 class ConfigManager:
     
@@ -144,8 +155,12 @@ class ConfigManager:
     def getInternetConnection_bool(self):
         return self.__config.getboolean("settings", "internet_connection")
     
+    def getDlyChkNum(self):
+        return self.__config.get("settings", "daily_checking_num")
+    
     def getSleepTimeSec_int(self):
-        return self.__config.getint("settings", "sleep_time_sec")
+        sec = (24*3600) / self.__config.getint("settings", "daily_checking_num")
+        return int(sec)
     
     
     # notification_time
@@ -158,14 +173,14 @@ class ConfigManager:
     def getNotificationTime_wkDay(self):
         return int(self.__config.getint("notification_time", "week_day"))
     
-    def getNotificationTime_hr(self):
-        return int(self.__config.getint("notification_time", "hour"))
+    def getNotificationTime_WklyNotiAfter(self):
+        return int(self.__config.getint("notification_time", "wkly_noti_after"))
     
-    def getNotificationTime_min(self):
-        return int(self.__config.getint("notification_time", "min"))
+    def getNotificationTime_NoNotiBef(self):
+        return int(self.__config.getint("notification_time", "no_noti_before"))
     
-    def getNotificationTime_sec(self):
-        return int(self.__config.getint("notification_time", "sec"))
+    def getNotificationTime_NoNotiAft(self):
+        return int(self.__config.getint("notification_time", "no_noti_after"))
     
     def getLastNotifyTime(self):
         return datetime.strptime(self.__config.get("notification_time", "last_notify_time"), "%Y-%m-%d").date()

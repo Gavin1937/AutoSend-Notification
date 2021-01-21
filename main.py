@@ -12,6 +12,7 @@ import Schedule
 import EmailSender
 from MsgGenerator import *
 import ConfigManager
+from ConfigManager import datetime2sec, sec2datetime
 from My_Logger import *
 
 
@@ -61,7 +62,7 @@ def main():
         # check current time
         print("Checking current time & internet connection...")
         logger.info("Checking current time & internet connection...")
-        timemonitor.updateObj()
+        timemonitor.updateTime()
         config.write2config("settings", "internet_connection", 
                             "true" if timemonitor.hasInternetConnection() else "false")
         logger.info("Update config.ini \"internet_connection\" setting")
@@ -77,18 +78,19 @@ def main():
             logger.info("Fresh weekly notification status, haven't send notification in this week")
         
         wkDay = config.getNotificationTime_wkDay()
-        hr = config.getNotificationTime_hr()
-        min = config.getNotificationTime_min()
-        sec = config.getNotificationTime_sec()
+        wklyNotiAft = config.getNotificationTime_WklyNotiAfter()
+        noNotiBef = config.getNotificationTime_NoNotiBef()
+        noNotiAft = config.getNotificationTime_NoNotiAft()
+        curr_time = timemonitor.getDateTimeObj()
         
         time_to_send_notification = (                                                        # conditions 
                                         timemonitor.hasInternetConnection() and              # currently has internet connection
                                         timemonitor.hasTime() and                            # currently timemonitor has datetime value
                                         whether_sent_curr_wk_email == False and              # haven't send this week's email
-                                        timemonitor.getDateTimeObj().weekday() == wkDay and  # today is Wednesday
-                                        timemonitor.getDateTimeObj().hour >= hr and          # current time is >= noon
-                                        timemonitor.getDateTimeObj().minute >= min and       # current time min >= 0
-                                        timemonitor.getDateTimeObj().second >= sec           # current time sec >= 0
+                                        curr_time.weekday() == wkDay and  # today is Wednesday
+                                        datetime2sec(curr_time) >= wklyNotiAft and          # current time is >= 12:00:00
+                                        datetime2sec(curr_time) < noNotiAft and   # current time is < 22:00:00
+                                        datetime2sec(curr_time) >= noNotiBef       # current time is >= 7:00:00
                                     )
         if time_to_send_notification:
             print("Prepare to send email...")
