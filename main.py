@@ -1,5 +1,6 @@
 import locale
-import datetime
+from datetime import datetime, timedelta
+from pytz import timezone
 import time
 import sys
 
@@ -25,6 +26,10 @@ def main():
     print("Initializing program...")
     logger.info("Initializing program...")
     try:
+        logger.info("Constructing config")
+        config = ConfigManager.ConfigManager()
+        logger.info("Finish config")
+        
         logger.info("Constructing timemonitor")
         timemonitor = TimeMonitor.TimeMonitor()
         logger.info("Finish timemonitor")
@@ -34,17 +39,13 @@ def main():
         logger.info("Finish contact")
         
         logger.info("Constructing sch")
-        sch = Schedule.Schedule("1FUdVpQe8WYOcYyFWFrbVJSvhVwqskRGL_8kYZCfgci4", "Sheet1!A1:H", 
+        sch = Schedule.Schedule(config.getSpreadsheetID(), config.getSpreadsheetRange(), 
                                 timemonitor.getDateTimeObj())
         logger.info("Finish sch")
         
         logger.info("Constructing email")
-        email = EmailSender.EmailSender("gyh2060411551gyh@gmail.com", "gyh1999037gyh.gmail2")
+        email = EmailSender.EmailSender(config.getUserEmailAddr(), config.getUserEmailPsw())
         logger.info("Finish email")
-        
-        logger.info("Constructing config")
-        config = ConfigManager.ConfigManager()
-        logger.info("Finish config")
         
     except Exception as err:
         print(err)
@@ -63,6 +64,16 @@ def main():
         config.write2config("settings", "internet_connection", 
                             "true" if timemonitor.hasInternetConnection() else "false")
         logger.info("Update config.ini \"internet_connection\" setting")
+        
+        # reset weekly notification flag if is new week
+        time_to_refresh_wkly_notification_flag = (
+            timemonitor.getDateTimeObj().date() > config.getLastNotifyTime() and
+            timemonitor.getDateTimeObj().weekday() <= config.getNotificationUpdateDay()
+        )
+        if time_to_refresh_wkly_notification_flag:
+            whether_sent_curr_wk_email = False
+            config.setSentWklyEmail(whether_sent_curr_wk_email)
+            logger.info("Fresh weekly notification status, haven't send notification in this week")
         
         wkDay = config.getNotificationTime_wkDay()
         hr = config.getNotificationTime_hr()
@@ -94,9 +105,9 @@ def main():
             
             # generate messages for people
             if sermon_person != None:
-                sermon_person_msg = getFullEmailMsg(getSermonMsg(sermon_person["refer_name"]), "(132) 456-789")
+                sermon_person_msg = getFullEmailMsg(getSermonMsg(sermon_person["refer_name"]), config.getUserNum())
             if worship_person != None:
-                worship_person_msg = getFullEmailMsg(getWorshipMsg(worship_person["refer_name"]), "(132) 456-789")
+                worship_person_msg = getFullEmailMsg(getWorshipMsg(worship_person["refer_name"]), config.getUserNum())
             logger.info("Generate messages for people")
             
             # send email
@@ -108,8 +119,11 @@ def main():
                 if worship_person != None:
                     email.sendEmail(worship_person["email"], "GCDC auto sent worship notification", worship_person_msg)
                     logger.info("Sent email to worship leader")
-                whether_sent_curr_wk_email = True
                 print("All emails sent")
+                whether_sent_curr_wk_email = True
+                config.setSentWklyEmail(whether_sent_curr_wk_email)
+                logger.info("Update weekly notification status, already sent notification in this week")
+                config.setLastNotifyTime(datetime.now(tz=timezone("US/Pacific")))
                 logger.info("Successfully sent email")
             except Exception as err:
                 print(err)

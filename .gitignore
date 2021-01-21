@@ -6,6 +6,7 @@
 /credential_key.json
 /config.ini
 /AutoSend_Notification.log
+/messages.txt
 /__pycache__/
 /.vscode/
 /credentials/

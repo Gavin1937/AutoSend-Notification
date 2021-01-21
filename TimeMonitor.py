@@ -28,9 +28,10 @@ class TimeMonitor:
             res = urlopen('http://just-the-time.appspot.com/')
             self.__internet_connection_flag = True
             logger.info("Successfully open url to check time & internet connection")
-        except:
+        except Exception as err:
             self.__internet_connection_flag = False
-            logger.warning("Fail to open url to check time & internet connection")
+            logger.warning("Fail to open url to check time & internet connection. Exception: %s" % str(err))
+            raise err
         
         if self.__internet_connection_flag == True:
             result = res.read().strip()
