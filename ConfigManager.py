@@ -10,7 +10,8 @@ user_info_arr = {
     "sender_email_addr": "",
     "sender_email_password": "",
     "spreadsheet_id": "",
-    "spreadsheet_range": ""
+    "spreadsheet_range": "",
+    "messages_file_path": ""
 }
 settings_arr = {
     "internet_connection": "false",
@@ -71,6 +72,30 @@ class ConfigManager:
         return self.__config.get(section, key)
     
     
+    def getMsgsFromFile(self):
+        msg_filepath = self.__config.get("user_info", "messages_file_path")
+        if msg_filepath == None:
+            logger.warning("Canont open message file due to missing filepath")
+            return None
+        msg_str_arr = list()
+        logger.info("Open message file: %s" % self.__config.get("user_info", "messages_file_path"))
+        with open(msg_filepath, 'r', encoding="utf-8") as msg_file:
+            # buffers
+            msg_str = msg_file.read()
+            pos1 = 0
+            pos2 = 0
+            # loop through whole file & search for message blocks
+            counter = msg_str.find("begin]")
+            while counter >= 0:
+                counter += 6
+                pos1 = msg_str.find("begin]", pos2)+6
+                logger.info("Loading message block: %s" % (msg_str[msg_str.find("[",pos2+1):pos1-7]+"]"))
+                pos2 = msg_str.find("[", pos1)
+                msg_str_arr.append(msg_str[pos1:pos2])
+                counter = msg_str.find("begin]", counter)
+            msg_file.close()
+        return msg_str_arr
+    
     # setters
     
     def setLastNotifyTime(self, time):
@@ -88,6 +113,8 @@ class ConfigManager:
             return self.__config
         return None
     
+    
+    # user_info
     def getUserName(self):
         return self.__config.get("user_info", "contact_person_name")
     
@@ -106,6 +133,11 @@ class ConfigManager:
     def getSpreadsheetRange(self):
         return self.__config.get("user_info", "spreadsheet_range")
     
+    def getMsgFilePath(self):
+        return self.__config.get("user_info", "messages_file_path")
+    
+    
+    # settings
     def getWeeklyEmailCondition_bool(self):
         return self.__config.getboolean("settings", "sent_weekly_email")
     
@@ -115,6 +147,8 @@ class ConfigManager:
     def getSleepTimeSec_int(self):
         return self.__config.getint("settings", "sleep_time_sec")
     
+    
+    # notification_time
     def getNotificationTime(self):
         return self.__config.items("notification_time")
     

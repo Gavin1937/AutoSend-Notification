@@ -1,3 +1,4 @@
+
 import locale
 from datetime import datetime, timedelta
 from pytz import timezone
@@ -103,11 +104,19 @@ def main():
             worship_person = contact.findContact(curr_column[4])
             logger.info("Find people to contact for emails")
             
+            # load messages from file
+            logger.info("Loading messages from file %s" % config.getMsgFilePath())
+            msg_str_arr = config.getMsgsFromFile()
+            
             # generate messages for people
             if sermon_person != None:
-                sermon_person_msg = getFullEmailMsg(getSermonMsg(sermon_person["refer_name"]), config.getUserNum())
+                sermon_person_msg = getFullEmailMsg(msg_str_arr[0],
+                                            getSermonMsg(msg_str_arr[1], sermon_person["refer_name"]),
+                                            config.getUserNum())
             if worship_person != None:
-                worship_person_msg = getFullEmailMsg(getWorshipMsg(worship_person["refer_name"]), config.getUserNum())
+                worship_person_msg = getFullEmailMsg(msg_str_arr[0],
+                                            getWorshipMsg(msg_str_arr[2], worship_person["refer_name"]),
+                                            config.getUserNum())
             logger.info("Generate messages for people")
             
             # send email
