@@ -13,7 +13,7 @@ import EmailSender
 from MsgGenerator import *
 import ConfigManager
 from ConfigManager import datetime2sec, sec2datetime
-from My_Logger import *
+from My_Logger import logger
 
 
 def main():
@@ -61,14 +61,21 @@ def main():
     while True:
         # check current time
         print("Checking current time & internet connection...")
-        logger.info("Checking current time & internet connection...")
-        timemonitor.updateTime()
+        try:
+            logger.info("Trying to check current time & internet connection...")
+            timemonitor.updateTime()
+        except Exception as err:
+            logger.warning("Cannot check current time & internet connection. Exception: %s" % str(err))
+            print(err)
         config.write2config("settings", "internet_connection", 
                             "true" if timemonitor.hasInternetConnection() else "false")
         logger.info("Update config.ini \"internet_connection\" setting")
         
         # reset weekly notification flag if is new week
         time_to_refresh_wkly_notification_flag = (
+            config.getLastNotifyTime() == None and
+            config.getWeeklyEmailCondition_bool() == False
+            or
             timemonitor.getDateTimeObj().date() > config.getLastNotifyTime() and
             timemonitor.getDateTimeObj().weekday() <= config.getNotificationUpdateDay()
         )
@@ -87,7 +94,7 @@ def main():
                                         timemonitor.hasInternetConnection() and              # currently has internet connection
                                         timemonitor.hasTime() and                            # currently timemonitor has datetime value
                                         whether_sent_curr_wk_email == False and              # haven't send this week's email
-                                        curr_time.weekday() == wkDay and  # today is Wednesday
+                                        curr_time.weekday() >= wkDay and  # today is Wednesday or later
                                         datetime2sec(curr_time) >= wklyNotiAft and          # current time is >= 12:00:00
                                         datetime2sec(curr_time) < noNotiAft and   # current time is < 22:00:00
                                         datetime2sec(curr_time) >= noNotiBef       # current time is >= 7:00:00

@@ -6,7 +6,7 @@ from googleapiclient.discovery import build
 from google.oauth2 import service_account
 
 # logger
-from My_Logger import *
+from My_Logger import logger
 
 
 class Schedule:

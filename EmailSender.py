@@ -1,6 +1,6 @@
 import smtplib
 
-from My_Logger import *
+from My_Logger import logger
 
 # This class is created with tutorial from:
 # YouTube Video: https://www.youtube.com/watch?v=mP_Ln-Z9-XY

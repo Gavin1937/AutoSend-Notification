@@ -1,9 +1,14 @@
 from urllib.request import urlopen
 from datetime import datetime, timedelta
+import time
+from time import mktime
 from pytz import timezone
 import pytz
 
-from My_Logger import *
+# external module
+import ntplib
+
+from My_Logger import logger
 
 class TimeMonitor:
     
@@ -15,41 +20,65 @@ class TimeMonitor:
         self.__time_flag = None
         self.__pst_time = None
         # update object
-        logger.info("Updating TimeMonitor object")
-        self.updateTime()
+        try:
+            logger.info("Trying to update TimeMonitor object")
+            self.updateTime()
+        except Exception as err:
+            logger.warning("Cannot update TimeMonitor object. Exception: %s" % str(err))
+            raise err
     
     # update time and all other boolean flags
     def updateTime(self):
         # update time
+        output_err = None
         
         # get utc time from url & check internet connection
         try:
-            logger.info("Trying to open url to check time & internet connection")
-            res = urlopen('http://just-the-time.appspot.com/')
+            logger.info("Trying to open url to check time & internet connection with ntplib")
+            logger.info("Create NTPClient")
+            client = ntplib.NTPClient()
+            logger.info("Requesting time form \"pool.ntp.org\"")
+            response = client.request('pool.ntp.org')
+            logger.info("Setting datetime object and internet_connection_flag")
+            t = time.localtime(response.tx_time)
+            self.__pst_time = datetime.fromtimestamp(mktime(t))
             self.__internet_connection_flag = True
-            logger.info("Successfully open url to check time & internet connection")
+            self.__time_flag = True
+            output_err = None
         except Exception as err:
             self.__internet_connection_flag = False
-            logger.warning("Fail to open url to check time & internet connection. Exception: %s" % str(err))
-            raise err
+            logger.warning("Cannot sync with time server. Exception: %s" % str(err))
+            output_err = err
         
-        if self.__internet_connection_flag == True:
-            result = res.read().strip()
-            result_str = result.decode('utf-8')
+        if output_err != None:
+            logger.info("Fail to check time & internet with ntplib, try with url")
+            try:
+                logger.info("Trying to open url to check time & internet connection with url")
+                res = urlopen('http://just-the-time.appspot.com/')
+                self.__internet_connection_flag = True
+                logger.info("Successfully open url to check time & internet connection")
+            except Exception as err:
+                self.__internet_connection_flag = False
+                logger.warning("Fail to open url to check time & internet connection. Exception: %s" % str(err))
+                raise err
             
-            # convert string to datetime obj
-            date_time_obj = datetime.strptime(result_str, '%Y-%m-%d %H:%M:%S')
-            
-            # set timezone
-            self.__pst_time = date_time_obj.astimezone(timezone('US/Pacific'))
-            
-            # Subtract 8 hours
-            self.__pst_time = self.__pst_time - timedelta(hours=8)
-            
-            # set has_time flag
-            self.__time_flag = True
-            
-            logger.info("Converted utc time to US/Pacific (PST) time")
+            if self.__internet_connection_flag == True:
+                result = res.read().strip()
+                result_str = result.decode('utf-8')
+                
+                # convert string to datetime obj
+                date_time_obj = datetime.strptime(result_str, '%Y-%m-%d %H:%M:%S')
+                
+                # set timezone
+                self.__pst_time = date_time_obj.astimezone(timezone('US/Pacific'))
+                
+                # Subtract 8 hours
+                self.__pst_time = self.__pst_time - timedelta(hours=8)
+                
+                # set has_time flag
+                self.__time_flag = True
+                
+                logger.info("Converted utc time to US/Pacific (PST) time")
     
     
     # getters

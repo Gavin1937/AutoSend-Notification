@@ -1,7 +1,7 @@
 from configparser import ConfigParser
 import os
 from datetime import datetime, timedelta
-from My_Logger import *
+from My_Logger import logger
 
 
 # global variables
@@ -183,4 +183,7 @@ class ConfigManager:
         return int(self.__config.getint("notification_time", "no_noti_after"))
     
     def getLastNotifyTime(self):
-        return datetime.strptime(self.__config.get("notification_time", "last_notify_time"), "%Y-%m-%d").date()
+        temp = self.__config.get("notification_time", "last_notify_time")
+        if temp != None and len(temp) > 0:
+            return datetime.strptime(temp, "%Y-%m-%d").date()
+        else: return None

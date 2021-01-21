@@ -1,5 +1,5 @@
 import json 
-from My_Logger import *
+from My_Logger import logger
 
 # store all contact info on RAM
 class Contact:
