@@ -3,7 +3,6 @@
 This program will send notification through an email provider (like Gmail) automatically every week. 
 
 
-<br>
 
 ## Program Python Module Requirements:
 * smtplib
@@ -12,11 +11,9 @@ This program will send notification through an email provider (like Gmail) autom
 * urllib
 * ntplib (included .whl file in ./external_modules/)
 
-<br>
 
 ## External requirements:
 
-<br>
 
 ### **Enable a service account for reading data from a Google Spreadsheet**
    * You can refer to tutorial video: https://www.youtube.com/watch?v=4ssigWmExak
@@ -37,14 +34,12 @@ This program will send notification through an email provider (like Gmail) autom
    * Click on that button and choose "Create New Key" and "JSON", and then "CREATE"
    * You will download a .json file. copy this file to the root directory of this repo, and then rename it to "credential_key.json"
 
-<br>
 
 ### **Enable "Less secure app access" for the Gmail that you want to use as email sender**
    * You can SKIP this step if you don't want to use Gmail as email sender
    * I recommend to use a secondary Gmail account as email sender
    * Enable in this link: https://myaccount.google.com/lesssecureapps
 
-<br>
 
 ### **Set up a "contact_list.json" file**
    * This is the list that this program will search for contact infos, program will also compare the names in the Google spreadsheet with names in "contact_list.json"
@@ -72,11 +67,9 @@ This program will send notification through an email provider (like Gmail) autom
     }
     ```
 
-<br>
 
 ## Customization Settings
 
-<br>
 
 ### **You need to modify config.ini file for this program**
 
@@ -113,7 +106,6 @@ This program will send notification through an email provider (like Gmail) autom
 * You can see which item is missing when running the program
 
 
-<br>
 
 ### **Messages**
 
