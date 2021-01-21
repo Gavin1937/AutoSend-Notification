@@ -116,4 +116,19 @@ This program will send notification through an email provider (like Gmail) autom
 * **2 keywords must start and end with square brackets**
 * You can insert your messages between 2 keywords
 * **You should modify "MsgGenerator.py" file to satisfy your needs for auto-generated messages**
+* messages.txt example:
+```
+[full message begin]
+#
 
+
+
+line 1
+line 2
+-----------------------------------------------------------------------------------------------------------------------------------
+line 3
+
+Phone No.: #
+[full message end]
+```
+* I use "#" as indicator for functions in "MsgGenerator.py" to replace with other strings, but you can change that base on your prefer
