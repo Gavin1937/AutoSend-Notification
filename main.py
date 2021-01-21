@@ -71,14 +71,25 @@ def main():
                             "true" if timemonitor.hasInternetConnection() else "false")
         logger.info("Update config.ini \"internet_connection\" setting")
         
+        
+        condition_list = ""
+        # collecting & logging conditions
+        condition_list += str(int(config.getLastNotifyTime() == None))                                          # don't have last notify time
+        logger.info("\"time_to_refresh_wkly_notification\" [%r] Whether last notify time is empty" % bool(int(condition_list[len(condition_list)-1])))
+        condition_list += str(int(config.getWeeklyEmailCondition_bool() == False))                              # haven't send email this week
+        logger.info("\"time_to_refresh_wkly_notification\" [%r] Whether send email this week" % bool(int(condition_list[len(condition_list)-1])))
+        time_to_refresh_wkly_notification_flag = int(condition_list,2) == int("1"*len(condition_list),2)
+        # or
+        if not time_to_refresh_wkly_notification_flag:
+            condition_list = ""
+            condition_list += str(int(timemonitor.getDateTimeObj().date() > config.getLastNotifyTime()))            # current time > last notify time
+            logger.info("\"time_to_refresh_wkly_notification\" [%r] Whether current time > last notify time" % bool(int(condition_list[len(condition_list)-1])))
+            condition_list += str(int(timemonitor.getDateTimeObj().weekday() <= config.getNotificationUpdateDay())) # current weekday <= notification update weekday
+            logger.info("\"time_to_refresh_wkly_notification\" [%r] Whether current weekday <= notification update weekday" % bool(int(condition_list[len(condition_list)-1])))
+            time_to_refresh_wkly_notification_flag = int(condition_list,2) == int("1"*len(condition_list),2)
+        logger.info("Time to refresh wkly notification status: %r" % time_to_refresh_wkly_notification_flag)
+        
         # reset weekly notification flag if is new week
-        time_to_refresh_wkly_notification_flag = (
-            config.getLastNotifyTime() == None and
-            config.getWeeklyEmailCondition_bool() == False
-            or
-            timemonitor.getDateTimeObj().date() > config.getLastNotifyTime() and
-            timemonitor.getDateTimeObj().weekday() <= config.getNotificationUpdateDay()
-        )
         if time_to_refresh_wkly_notification_flag:
             whether_sent_curr_wk_email = False
             config.setSentWklyEmail(whether_sent_curr_wk_email)
@@ -90,15 +101,26 @@ def main():
         noNotiAft = config.getNotificationTime_NoNotiAft()
         curr_time = timemonitor.getDateTimeObj()
         
-        time_to_send_notification = (                                                        # conditions 
-                                        timemonitor.hasInternetConnection() and              # currently has internet connection
-                                        timemonitor.hasTime() and                            # currently timemonitor has datetime value
-                                        whether_sent_curr_wk_email == False and              # haven't send this week's email
-                                        curr_time.weekday() >= wkDay and  # today is Wednesday or later
-                                        datetime2sec(curr_time) >= wklyNotiAft and          # current time is >= 12:00:00
-                                        datetime2sec(curr_time) < noNotiAft and   # current time is < 22:00:00
-                                        datetime2sec(curr_time) >= noNotiBef       # current time is >= 7:00:00
-                                    )
+        
+        condition_list = ""
+        # collecting & logging conditions
+        condition_list += str(int(timemonitor.hasInternetConnection()))        # currently has internet connection
+        logger.info("\"time_to_send_notification\" [%r] Whether have internet" % bool(int(condition_list[len(condition_list)-1])))
+        condition_list += str(int(timemonitor.hasTime()))                      # currently timemonitor has datetime value
+        logger.info("\"time_to_send_notification\" [%r] Whether have time in TimeMonitor" % bool(int(condition_list[len(condition_list)-1])))
+        condition_list += str(int(whether_sent_curr_wk_email == False))        # haven't send this week's email
+        logger.info("\"time_to_send_notification\" [%r] Whether sent current week's email" % bool(int(condition_list[len(condition_list)-1])))
+        condition_list += str(int(curr_time.weekday() >= wkDay))               # current weekday >= weekday for notification
+        logger.info("\"time_to_send_notification\" [%r] Whether Current weekday is equal/later than set weekday" % bool(int(condition_list[len(condition_list)-1])))
+        condition_list += str(int(datetime2sec(curr_time) >= wklyNotiAft))     # current time is >= weekly notification time (sec)
+        logger.info("\"time_to_send_notification\" [%r] Whether is time to send email" % bool(int(condition_list[len(condition_list)-1])))
+        condition_list += str(int(datetime2sec(curr_time) < noNotiAft))        # current time is within no notification time limit 1 (sec)
+        logger.info("\"time_to_send_notification\" [%r] Wether current time is less than no_noti_after" % bool(int(condition_list[len(condition_list)-1])))
+        condition_list += str(int(datetime2sec(curr_time) >= noNotiBef))       # current time is out of no notification time limit 2 (sec)
+        logger.info("\"time_to_send_notification\" [%r] Wether current time is greater/equal to no_noti_before" % bool(int(condition_list[len(condition_list)-1])))
+        
+        time_to_send_notification = int(condition_list, 2) == int("1"*len(condition_list), 2)
+        logger.info("Time to send notification status: %r" % time_to_send_notification)
         if time_to_send_notification:
             print("Prepare to send email...")
             logger.info("Prepare to send email...")
