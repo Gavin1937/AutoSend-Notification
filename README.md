@@ -136,3 +136,17 @@ Phone No.: #
 [full message end]
 ```
 * I use "#" as indicator for functions in "MsgGenerator.py" to replace with other strings, but you can change that base on your prefer
+
+
+
+### **Google Spreadsheet Format**
+
+* Function __find_curr_year_column() in class Schedule is responsible to process 2-D array __values of the class
+* You should modify __find_curr_year_column() function to fit your Google Spreadsheet format
+
+
+### **Log File**
+
+* Log file is "AutoSend_Notification.log"
+* Log file have size **limitation of 5MB**, and will **backup 1 file**, so **totally 10MB of size limit**
+* You can edit this size limitation in "My_Logger.py" file, in RotatingFileHandler(), maxBytes= 
