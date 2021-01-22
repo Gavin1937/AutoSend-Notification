@@ -18,7 +18,8 @@ user_info_arr = {
 settings_arr = {
     "internet_connection": "false",     # Whether have internet connection
     "sent_weekly_email": "false",       # Whether sent current week's email
-    "daily_checking_num": "4",          # how many times to check time & internet connection in a day, cannot be 0
+    "daily_checking_num": "4",          # how many times to check time & internet connection in a day,
+                                        # always start from 0sec of the day, cannot be 0
     "smtp_server": "smtp.gmail.com:587" # SMTP server:port, default to Google
 }
 notification_time_arr = {
@@ -196,9 +197,14 @@ class ConfigManager:
     def getSMTPserver(self):
         return self.__config.get("settings", "smtp_server")
     
-    def getSleepTimeSec_int(self):
-        sec = (24*3600) / self.__config.getint("settings", "daily_checking_num")
-        return int(sec)
+    def getSleepTimeSec_int(self, curr_time):
+        dly_chk_num = self.__config.getint("settings", "daily_checking_num")
+        sec = int((24*3600) / dly_chk_num)
+        curr_time_sec = datetime2sec(curr_time)
+        for i in range(dly_chk_num):
+            if curr_time_sec < (sec*i):
+                return int((sec*i)-curr_time_sec)
+        return int(86400-curr_time_sec)
     
     
     # notification_time

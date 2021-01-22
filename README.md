@@ -90,8 +90,12 @@ This program will send notification through an email provider (like Gmail) autom
 
 [settings]
     internet_connection = false       // **[AutoGenerate]** Whether have internet connection
-    sent_weekly_email = false         // [AutoGenerate]  Whether sent current week's email
-    daily_checking_num = 4            // how many times to check time & internet connection in a day, cannot be 0
+    sent_weekly_email = false         // **[AutoGenerate]**  Whether sent current week's email
+    daily_checking_num = 4            // how many times to check time & internet connection in a day,
+                                      // always start from 0sec of the day, cannot be 0
+                                      // This value will be count from 0sec of a day
+                                      // that means if value=4, program will check time & internet at everyday 0am, 6am, 12pm, and 6pm
+                                      // if value=6, program will check at 0am, 4am, 8am, 12pm, 4pm, 8pm
     smtp_server = smtp.gmail.com:587  // SMTP server:port, default to Google. (Find yours by google email_provider + smtp server port)
 
 [notification_time]
