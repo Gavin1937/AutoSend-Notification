@@ -88,7 +88,7 @@ def main():
             condition_list += str(int(timemonitor.getDateTimeObj().weekday() <= config.getNotificationUpdateDay())) # current weekday <= notification update weekday
             logger.info("\"time_to_refresh_wkly_notification\" [%r] Whether current weekday <= notification update weekday" % bool(int(condition_list[len(condition_list)-1])))
             time_to_refresh_wkly_notification_flag = int(condition_list,2) == int("1"*len(condition_list),2)
-        logger.info("Time to refresh wkly notification status: %r" % time_to_refresh_wkly_notification_flag)
+        logger.info("Time to refresh wkly notification status: [%r]" % time_to_refresh_wkly_notification_flag)
         
         # reset weekly notification flag if is new week
         if time_to_refresh_wkly_notification_flag:
@@ -121,7 +121,7 @@ def main():
         logger.info("\"time_to_send_notification\" [%r] Wether current time is greater/equal to no_noti_before" % bool(int(condition_list[len(condition_list)-1])))
         
         time_to_send_notification = int(condition_list, 2) == int("1"*len(condition_list), 2)
-        logger.info("Time to send notification status: %r" % time_to_send_notification)
+        logger.info("Time to send notification status: [%r]" % time_to_send_notification)
         if time_to_send_notification:
             print("Prepare to send email...")
             logger.info("Prepare to send email...")
@@ -177,5 +177,13 @@ def main():
 
 
 if __name__ == "__main__":
-    main()
-    logger.info("Exist Program")
+    try:    
+        print("Start Program")
+        logger.info("Start Program")
+        main()
+        print("Exit Program")
+        logger.info("Exit Program")
+    except Exception as err:
+        print(str(err))
+        logger.warning("Something wrong with program. Exception: %s" %str(err))
+        logger.warning(str(err))

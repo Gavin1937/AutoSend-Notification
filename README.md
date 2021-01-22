@@ -6,8 +6,9 @@ This program will send notification through an email provider (like Gmail) autom
 
 ## Program Python Module Requirements:
 * smtplib
-* googleapiclient
-* google
+* google-api-python-client
+* google-auth-httplib2
+* google-auth-oauthlib
 * urllib
 * ntplib (included .whl file in ./external_modules/)
 
@@ -91,11 +92,11 @@ This program will send notification through an email provider (like Gmail) autom
 [settings]
     internet_connection = false       // **[AutoGenerate]** Whether have internet connection
     sent_weekly_email = false         // **[AutoGenerate]**  Whether sent current week's email
-    daily_checking_num = 4            // how many times to check time & internet connection in a day,
-                                      // always start from 0sec of the day, cannot be 0
-                                      // This value will be count from 0sec of a day
-                                      // that means if value=4, program will check time & internet at everyday 0am, 6am, 12pm, and 6pm
-                                      // if value=6, program will check at 0am, 4am, 8am, 12pm, 4pm, 8pm
+    weekly_checking_day = 2           // When to check time & internet connection in a week, (2 = Wednesday)
+    weekly_checking_time = 43200      // When to check time & internet connection on "weekly_checking_day",
+                                      // always start from 0sec of the day
+                                      // if weekly_checking_day = 2 and weekly_checking_time = 43200
+                                      // then program will check time & internet connection on every Wednesday 12:00:00
     smtp_server = smtp.gmail.com:587  // SMTP server:port, default to Google. (Find yours by google email_provider + smtp server port)
 
 [notification_time]

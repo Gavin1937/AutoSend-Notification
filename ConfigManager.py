@@ -18,8 +18,9 @@ user_info_arr = {
 settings_arr = {
     "internet_connection": "false",     # Whether have internet connection
     "sent_weekly_email": "false",       # Whether sent current week's email
-    "daily_checking_num": "4",          # how many times to check time & internet connection in a day,
-                                        # always start from 0sec of the day, cannot be 0
+    "weekly_checking_day": "2",         # When to check time & internet connection in a week, (2 = Wednesday)
+    "weekly_checking_time": "43200",    # When to check time & internet connection in a "weekly_checking_day",
+                                        # always start from 0sec of the day
     "smtp_server": "smtp.gmail.com:587" # SMTP server:port, default to Google
 }
 notification_time_arr = {
@@ -191,20 +192,35 @@ class ConfigManager:
     def getInternetConnection_bool(self):
         return self.__config.getboolean("settings", "internet_connection")
     
-    def getDlyChkNum(self):
-        return self.__config.get("settings", "daily_checking_num")
+    def getWklyChkDay(self):
+        return self.__config.get("settings", "weekly_checking_day")
+    
+    def getWklyChkTime(self):
+        return self.__config.get("settings", "weekly_checking_time")
     
     def getSMTPserver(self):
         return self.__config.get("settings", "smtp_server")
     
     def getSleepTimeSec_int(self, curr_time):
-        dly_chk_num = self.__config.getint("settings", "daily_checking_num")
-        sec = int((24*3600) / dly_chk_num)
-        curr_time_sec = datetime2sec(curr_time)
-        for i in range(dly_chk_num):
-            if curr_time_sec < (sec*i):
-                return int((sec*i)-curr_time_sec)
-        return int(86400-curr_time_sec)
+        wkly_chk_day = self.__config.getint("settings", "weekly_checking_day")
+        wkly_chk_time = self.__config.getint("settings", "weekly_checking_time")
+        sent_wkly_email = self.__config.getboolean("settings", "sent_weekly_email")
+        
+        # get next notification datetime
+        if curr_time.weekday() <= wkly_chk_day and not sent_wkly_email: # today is before/equal set wkly_chk_day (weekday)
+            wkly_chk_day_datetime = datetime(curr_time.year, curr_time.month, curr_time.day)
+            wkly_chk_day_datetime += timedelta(wkly_chk_day-curr_time.weekday())
+        else: # today is after set wkly_chk_day (weekday)
+            wkly_chk_day_datetime = datetime(curr_time.year, curr_time.month, curr_time.day)
+            wkly_chk_day_datetime -= timedelta(curr_time.weekday()-wkly_chk_day)
+            wkly_chk_day_datetime += timedelta(7)
+        
+        # add exact hh:mm:ss to next notification datetime
+        wkly_chk_day_datetime += timedelta(0, wkly_chk_time)
+        
+        # get total seconds between next notification datetime and now
+        sec = int((wkly_chk_day_datetime - curr_time).total_seconds())
+        return sec
     
     
     # notification_time
