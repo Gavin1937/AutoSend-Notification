@@ -70,7 +70,7 @@ class Contact:
     
     # getter
     
-    def getData(self):
+    def getContactList(self):
         if self.__file_exist_flag == True:
             return self.__contact_list
     

@@ -13,7 +13,18 @@ import EmailSender
 from MsgGenerator import *
 import ConfigManager
 from ConfigManager import datetime2sec, sec2datetime
+import ArgumentHandler
 from My_Logger import logger
+
+
+
+# Send Email to all people in contact_list.json
+def sendEmail2All(email, contact_list, message_block, subject):
+    logger.info("Sending email to all people in contact_list.json")
+    print("Sending email to all people in contact_list.json")
+    for person in contact_list:
+        msg = message_block.replace("#", person["refer_name"])
+        email.sendEmail(person["email"], subject, msg)
 
 
 def main():
@@ -21,13 +32,12 @@ def main():
     locale.setlocale(locale.LC_ALL, '')
     logger.info("Set locale")
     
-    # prompt user for basic infos use in declaration part
-    # TODO: add prompt
-    
     # declaration
     print("Initializing program...")
     logger.info("Initializing program...")
     try:
+        argHdl = ArgumentHandler.ArgumentHandler(sys.argv)
+        
         logger.info("Constructing config")
         config = ConfigManager.ConfigManager()
         config.check_config_missing()
@@ -58,6 +68,20 @@ def main():
     whether_sent_curr_wk_email = config.getWeeklyEmailCondition_bool()
     
     
+    # handle argv
+    if argHdl.hasArg():
+        if argHdl.hasHelp():
+            argHdl.printHelp()
+            print("Exit Program")
+            logger.info("Exit Program")
+            sys.exit()
+        if argHdl.hasSend2AllMsg():
+                sendEmail2All(email, contact.getContactList(), argHdl.getSend2AllMsg(), config.getMsgSbj())
+        print("Exit Program")
+        logger.info("Exit Program")
+        sys.exit()
+    
+    
     # main loop
     while True:
         # check current time
@@ -78,7 +102,7 @@ def main():
         condition_list += str(int(config.getLastNotifyTime() == None))                                          # don't have last notify time
         logger.info("\"time_to_refresh_wkly_notification\" [%r] Whether last notify time is empty" % bool(int(condition_list[len(condition_list)-1])))
         condition_list += str(int(config.getWeeklyEmailCondition_bool() == False))                              # haven't send email this week
-        logger.info("\"time_to_refresh_wkly_notification\" [%r] Whether send email this week" % bool(int(condition_list[len(condition_list)-1])))
+        logger.info("\"time_to_refresh_wkly_notification\" [%r] Didn't send email this week" % bool(int(condition_list[len(condition_list)-1])))
         time_to_refresh_wkly_notification_flag = int(condition_list,2) == int("1"*len(condition_list),2)
         # or
         if not time_to_refresh_wkly_notification_flag:
@@ -110,7 +134,7 @@ def main():
         condition_list += str(int(timemonitor.hasTime()))                      # currently timemonitor has datetime value
         logger.info("\"time_to_send_notification\" [%r] Whether have time in TimeMonitor" % bool(int(condition_list[len(condition_list)-1])))
         condition_list += str(int(whether_sent_curr_wk_email == False))        # haven't send this week's email
-        logger.info("\"time_to_send_notification\" [%r] Whether sent current week's email" % bool(int(condition_list[len(condition_list)-1])))
+        logger.info("\"time_to_send_notification\" [%r] Didn't sent current week's email" % bool(int(condition_list[len(condition_list)-1])))
         condition_list += str(int(curr_time.weekday() >= wkDay))               # current weekday >= weekday for notification
         logger.info("\"time_to_send_notification\" [%r] Whether Current weekday is equal/later than set weekday" % bool(int(condition_list[len(condition_list)-1])))
         condition_list += str(int(datetime2sec(curr_time) >= wklyNotiAft))     # current time is >= weekly notification time (sec)
@@ -187,3 +211,5 @@ if __name__ == "__main__":
         print(str(err))
         logger.warning("Something wrong with program. Exception: %s" %str(err))
         logger.warning(str(err))
+
+
