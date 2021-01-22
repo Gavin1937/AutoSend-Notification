@@ -1,8 +1,16 @@
 import logging
+from logging.handlers import RotatingFileHandler
 
-# Create an configure logger
-LOG_FORMAT = "[%(levelname)s][%(asctime)s]:%(funcName)s - %(message)s"
-logging.basicConfig(filename = "./AutoSend_Notification.log",
-                    level = logging.DEBUG,
-                    format = LOG_FORMAT)
-logger = logging.getLogger()
+log_formatter = logging.Formatter("[%(levelname)s][%(asctime)s]:%(funcName)s - %(message)s")
+
+logFile = "./AutoSend_Notification.log"
+
+my_handler = RotatingFileHandler(logFile, mode='a', maxBytes=5*1024*1024, 
+                                backupCount=1, encoding="utf-8")
+my_handler.setFormatter(log_formatter)
+my_handler.setLevel(logging.DEBUG)
+
+logger = logging.getLogger('root')
+logger.setLevel(logging.DEBUG)
+
+logger.addHandler(my_handler)
