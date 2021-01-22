@@ -38,6 +38,8 @@ class ArgumentHandler:
                     Charactor '#' will be use to indicate contact person's refer_name in message text file
     
     syntax: python main.py --send2all [path_to_message_file.txt]
+    
+    -h, --help      Print this help message
 """
         )
     

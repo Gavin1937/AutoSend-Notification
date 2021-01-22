@@ -90,8 +90,8 @@ This program will send notification through an email provider (like Gmail) autom
     messages_file_path =              // Path to text file that contains all message blocks
 
 [settings]
-    internet_connection = false       // **[AutoGenerate]** Whether have internet connection
-    sent_weekly_email = false         // **[AutoGenerate]**  Whether sent current week's email
+    internet_connection = false       // [AutoGenerate] Whether have internet connection
+    sent_weekly_email = false         // [AutoGenerate]  Whether sent current week's email
     weekly_checking_day = 2           // When to check time & internet connection in a week, (2 = Wednesday)
     weekly_checking_time = 43200      // When to check time & internet connection on "weekly_checking_day",
                                       // always start from 0sec of the day
@@ -105,7 +105,7 @@ This program will send notification through an email provider (like Gmail) autom
     wkly_noti_after = 43200           // When to send notification, value is in seconds in a day (43200=12pm,12)
     no_noti_before = 25200            // Stop sending notification before this time, value is in seconds in a day (25200=7am,7)
     no_noti_after = 79200             // Stop sending notification after this time, value is in seconds in a day (79200=10pm,22)
-    last_notify_time =                // **[AutoGenerate]** Record of last notification time, auto set by program
+    last_notify_time =                // [AutoGenerate] Record of last notification time, auto set by program
 ```
 
 * You can see which item is missing when running the program
@@ -151,3 +151,21 @@ Phone No.: #
 * Log file is "AutoSend_Notification.log"
 * Log file have size **limitation of 5MB**, and will **backup 1 file**, so **totally 10MB of size limit**
 * You can edit this size limitation in "My_Logger.py" file, in RotatingFileHandler(), maxBytes= 
+
+
+## Program Arguments
+
+### Argument list
+```
+    Arguments
+    
+    --send2all      Send email to all people in contact_list.json with a text file contains messages
+                    Message text file don't need to have square brackets to indicate message blocks
+                    So this file can only contain one message
+                    Charactor '#' will be use to indicate contact person's refer_name in message text file
+    
+    syntax: python main.py --send2all [path_to_message_file.txt]
+    
+    -h, --help      Print this help message
+```
+
