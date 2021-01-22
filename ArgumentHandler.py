@@ -53,12 +53,14 @@ class ArgumentHandler:
     )
     
     def hasArg(self):
-        flag = (
-            self.hasHelp() or
-            self.hasSend2AllMsg() or
-            self.hasSheetColumn()
-        )
-        return flag
+        condition_list = ""
+        condition_list += str(int(self.hasHelp()))
+        logger.info("\"ArgumentHandler\" [%r] hasHelp()" % bool(int(condition_list[len(condition_list)-1])))
+        condition_list += str(int(self.hasSend2AllMsg()))
+        logger.info("\"ArgumentHandler\" [%r] hasSend2AllMsg()" % bool(int(condition_list[len(condition_list)-1])))
+        condition_list += str(int(self.hasSheetColumn()))
+        logger.info("\"ArgumentHandler\" [%r] hasSheetColumn()" % bool(int(condition_list[len(condition_list)-1])))
+        return (int(condition_list, 2) != 0)
     
     def hasHelp(self):
         return self.__hasHelp_flag

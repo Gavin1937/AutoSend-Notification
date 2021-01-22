@@ -32,12 +32,22 @@ def main():
     locale.setlocale(locale.LC_ALL, '')
     logger.info("Set locale")
     
+    # construct ArgumentHandler to handle arguments first
+    logger.info("Constructing argHdl")
+    argHdl = ArgumentHandler.ArgumentHandler(sys.argv)
+    logger.info("Finish argHdl")
+    # handle help argument
+    if argHdl.hasArg():
+        if argHdl.hasHelp():
+            argHdl.printHelp()
+            print("Exit Program")
+            logger.info("Exit Program")
+            sys.exit()
+    
     # declaration
     print("Initializing program...")
     logger.info("Initializing program...")
     try:
-        argHdl = ArgumentHandler.ArgumentHandler(sys.argv)
-        
         logger.info("Constructing config")
         config = ConfigManager.ConfigManager()
         config.check_config_missing()
@@ -70,11 +80,6 @@ def main():
     
     # handle argv
     if argHdl.hasArg():
-        if argHdl.hasHelp():
-            argHdl.printHelp()
-            print("Exit Program")
-            logger.info("Exit Program")
-            sys.exit()
         if argHdl.hasSend2AllMsg():
             sendEmail2All(email, contact.getContactList(), argHdl.getSend2AllMsg(), config.getMsgSbj())
         if argHdl.hasSheetColumn():
