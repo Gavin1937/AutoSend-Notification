@@ -159,13 +159,15 @@ Phone No.: #
 ```
     Arguments
     
-    --send2all      Send email to all people in contact_list.json with a text file contains messages
-                    Message text file don't need to have square brackets to indicate message blocks
-                    So this file can only contain one message
-                    Charactor '#' will be use to indicate contact person's refer_name in message text file
+    --send2all          Send email to all people in contact_list.json with a text file contains messages
+                        Message text file don't need to have square brackets to indicate message blocks
+                        So this file can only contain one message
+                        Charactor '#' will be use to indicate contact person's refer_name in message text file
     
     syntax: python main.py --send2all [path_to_message_file.txt]
     
-    -h, --help      Print this help message
+    --sheet-col         Print column in the Google Spreadsheet for current week
+    
+    -h, --help          Print this help message
 ```
 

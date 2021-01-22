@@ -76,7 +76,9 @@ def main():
             logger.info("Exit Program")
             sys.exit()
         if argHdl.hasSend2AllMsg():
-                sendEmail2All(email, contact.getContactList(), argHdl.getSend2AllMsg(), config.getMsgSbj())
+            sendEmail2All(email, contact.getContactList(), argHdl.getSend2AllMsg(), config.getMsgSbj())
+        if argHdl.hasSheetColumn():
+            argHdl.printSheetColumn(sch.getCurrColumn())
         print("Exit Program")
         logger.info("Exit Program")
         sys.exit()
