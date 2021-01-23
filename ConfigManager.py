@@ -10,6 +10,8 @@ user_info_arr = {
     "contact_person_number": "",        # Phone number of this person
     "sender_email_addr": "",            # Sender Email's address
     "sender_email_password": "",        # Sender Email's password
+    "enable_notify_admin": "true",      # Whether send an email to notify contact_person (admin) after each email sending, default=true
+    "admin_email_addr": "",             # If enable_notify_admin=true, require an email for contact_person (admin)
     "spreadsheet_id": "",               # Id of Google Spreadsheet to read
     "spreadsheet_range": "",            # Range of Google Spreadsheet to read
     "message_subject": "",              # Subject for all auto send emails
@@ -79,13 +81,36 @@ class ConfigManager:
             missing_configs.clear()
             # check config.ini
             all_sections = self.__config.sections()
+            
+            # process admin notification configs
+            enable_notiAdm_val = self.__config.get("user_info", "enable_notify_admin")
+            adm_EmailAddr_val = self.__config.get("user_info", "admin_email_addr")
+            if len(enable_notiAdm_val) <= 0 and len(adm_EmailAddr_val) <= 0:
+                missing_configs.append("[%s], %s" % ("user_info", "enable_notify_admin"))
+                missing_configs.append("[%s], %s" % ("user_info", "admin_email_addr"))
+            elif (self.__config.getboolean("user_info", "enable_notify_admin") == True and
+                len(adm_EmailAddr_val) <= 0):
+                missing_configs.append("[%s], %s" % ("user_info", "admin_email_addr"))
+            
+            at_admin_config_sect = False
+            counter = 0
             for sec in all_sections:
                 all_options = self.__config.options(sec)
                 for opt in all_options:
                     item = self.__config.get(sec, opt)
-                    if len(item) <= 0 and opt != "last_notify_time":
-                        have_all_config = False
-                        missing_configs.append("[%s], %s" % (sec, opt))
+                    if opt == "admin_email_addr":
+                        at_admin_config_sect = True
+                    if len(item) <= 0: # empty string
+                        # skip empty last_notify_time
+                        if opt == "last_notify_time" or opt == "enable_notify_admin" or opt == "admin_email_addr": 
+                            continue
+                        else:
+                            have_all_config = False
+                            if not at_admin_config_sect:
+                                missing_configs.insert(counter, "[%s], %s" % (sec, opt))
+                                counter += 1
+                            else: # at_admin_config_sect
+                                missing_configs.append("[%s], %s" % (sec, opt))
             if len(missing_configs) == 0:
                 have_all_config = True
                 print("Config file is complete")
@@ -171,6 +196,12 @@ class ConfigManager:
     
     def getUserEmailPsw(self):
         return self.__config.get("user_info", "sender_email_password")
+    
+    def isEnableNotiAdmin(self):
+        return self.__config.get("user_info", "enable_notify_admin")
+    
+    def getAdminEmailAddr(self):
+        return self.__config.get("user_info", "admin_email_addr")
     
     def getSpreadsheetID(self):
         return self.__config.get("user_info", "spreadsheet_id")

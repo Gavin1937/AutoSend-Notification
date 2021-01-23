@@ -84,6 +84,8 @@ This program will send notification through an email provider (like Gmail) autom
     contact_person_number =           // Phone number of this person
     sender_email_addr =               // Sender Email's address
     sender_email_password =           // Sender Email's password
+    enable_notify_admin = true        // Whether send an email to notify contact_person (admin) after each email sending, default=true
+    admin_email_addr =                // If enable_notify_admin=true, require an email for contact_person (admin)
     spreadsheet_id =                  // Id of Google Spreadsheet to read
     spreadsheet_range =               // Range of Google Spreadsheet to read
     message_subject =                 // Subject for all auto send emails

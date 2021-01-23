@@ -19,12 +19,24 @@ from My_Logger import logger
 
 
 # Send Email to all people in contact_list.json
-def sendEmail2All(email, contact_list, message_block, subject):
-    logger.info("Sending email to all people in contact_list.json")
-    print("Sending email to all people in contact_list.json")
-    for person in contact_list:
-        msg = message_block.replace("#", person["refer_name"])
-        email.sendEmail(person["email"], subject, msg)
+def sendEmail2All(config, email, contact_list, message_block, subject):
+    try:
+        logger.info("Trying to send email to all people in contact_list.json")
+        print("Trying to send email to all people in contact_list.json")
+        buff = ""
+        for person in contact_list:
+            msg = message_block.replace("#", person["refer_name"])
+            email.sendEmail(person["email"], subject, msg)
+            buff += person["refer_name"] + ", "
+        if config.isEnableNotiAdmin():
+            msg2admin = "Sent Email to All:\n" + buff + "\n\nMessage:\n" + message_block
+            email.sendEmail(config.getAdminEmailAddr(), 
+                        "AutoSend-Notification: Email Sending Notification",
+                        msg2admin)
+            logger.info("Sent Email to notify admin")
+    except Exception as err:
+        logger.warning("Cannot send email to all people in contact_list.json. Exception: %s" % str(err))
+        raise err
 
 
 def main():
@@ -81,7 +93,12 @@ def main():
     # handle argv
     if argHdl.hasArg():
         if argHdl.hasSend2AllMsg():
-            sendEmail2All(email, contact.getContactList(), argHdl.getSend2AllMsg(), config.getMsgSbj())
+            try:
+                logger.info("Trying to send email to all")
+                sendEmail2All(config, email, contact.getContactList(), argHdl.getSend2AllMsg(), config.getMsgSbj())
+            except Exception as err:
+                logger.warning("Fail to send email to all. Exception: %s" % str(err))
+                raise err
         if argHdl.hasSheetColumn():
             argHdl.printSheetColumn(sch.getCurrColumn())
         print("Exit Program")
@@ -172,14 +189,20 @@ def main():
             msg_str_arr = config.getMsgsFromFile()
             
             # generate messages for people
+            if config.isEnableNotiAdmin():
+                msg2admin = "Sent Email to:\n\n"
             if sermon_person != None:
                 sermon_person_msg = getFullEmailMsg(msg_str_arr[0],
                                             getSermonMsg(msg_str_arr[1], sermon_person["refer_name"]),
                                             config.getUserNum())
+                if config.isEnableNotiAdmin():
+                    msg2admin += "Sermon Person: " + sermon_person["name"] + ",\n\nMessage:\n" + sermon_person_msg + "\n\n"
             if worship_person != None:
                 worship_person_msg = getFullEmailMsg(msg_str_arr[0],
                                             getWorshipMsg(msg_str_arr[2], worship_person["refer_name"]),
                                             config.getUserNum())
+                if config.isEnableNotiAdmin():
+                    msg2admin += "Worship Person: " + worship_person["name"] + ",\n\nMessage:\n" + worship_person_msg + "\n\n"
             logger.info("Generate messages for people")
             
             # send email
@@ -191,6 +214,11 @@ def main():
                 if worship_person != None:
                     email.sendEmail(worship_person["email"], config.getMsgSbj(), worship_person_msg)
                     logger.info("Sent email to worship leader")
+                if config.isEnableNotiAdmin():
+                    email.sendEmail(config.getAdminEmailAddr(),
+                                "AutoSend-Notification: Email Sending Notification",
+                                msg2admin)
+                    logger.info("Sent email to notify admin")
                 print("All emails sent")
                 whether_sent_curr_wk_email = True
                 config.setSentWklyEmail(whether_sent_curr_wk_email)
