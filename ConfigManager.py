@@ -46,6 +46,10 @@ def datetime2sec(date):
     sec = (date - date.replace(hour=0, minute=0, second=0, microsecond=0)).total_seconds()
     return int(sec)
 
+# get current system time string fmt=%Y-%m-%d %H:%M:%S.%f
+def getSysTimeStr():
+    return datetime.now().strftime("%Y-%m-%d %H:%M:%S.%f")[:-3]
+
 
 class ConfigManager:
     
@@ -116,12 +120,12 @@ class ConfigManager:
                                 missing_configs.append("[%s], %s" % (sec, opt))
             if len(missing_configs) == 0:
                 have_all_config = True
-                print("Config file is complete")
+                print("[%s] - Config file is complete" % getSysTimeStr())
                 logger.info("Config file is complete")
                 break
             # prompt user to fill in config.ini
             for mis in missing_configs:
-                print("Please fill in missing configuration: %s" % mis)
+                print("[%s] - Please fill in missing configuration: %s" % (getSysTimeStr(), mis))
             input("Press any key to reload config.ini")
     
     # writting to config.ini
