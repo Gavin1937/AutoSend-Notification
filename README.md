@@ -62,7 +62,7 @@ python AutoSend_Notification.py -h
    * This is the list that this program will search for contact infos, program will also compare the names in the Google spreadsheet with names in "contact_list.json"
    * Sample "contact_list.json":
     
-    ```json
+    ```
     {
         "contact_list": [
             {
