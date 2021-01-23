@@ -19,7 +19,9 @@ user_info_arr = {
 }
 settings_arr = {
     "internet_connection": "false",     # Whether have internet connection
+                                        # **DO NOT MODIFY THIS VALUE**
     "sent_weekly_email": "false",       # Whether sent current week's email
+                                        # **DO NOT MODIFY THIS VALUE**
     "weekly_checking_day": "2",         # When to check time & internet connection in a week, (2 = Wednesday)
     "weekly_checking_time": "43200",    # When to check time & internet connection in a "weekly_checking_day",
                                         # always start from 0sec of the day
@@ -32,6 +34,7 @@ notification_time_arr = {
     "no_noti_before": "25200",          # Stop sending notification before this time, value is in seconds in a day (25200=7am,7)
     "no_noti_after": "79200",           # Stop sending notification after this time, value is in seconds in a day (79200=10pm,22)
     "last_notify_time": ""              # Record of last notification time, auto set by program
+                                        # **DO NOT MODIFY THIS VALUE**
 }
 
 # global functions

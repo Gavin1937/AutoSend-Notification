@@ -3,6 +3,7 @@
 This program will send notification through an email provider (like Gmail) automatically every week. 
 
 
+## Python Version: 3.8.5
 
 ## Program Python Module Requirements:
 * smtplib
@@ -76,6 +77,7 @@ This program will send notification through an email provider (like Gmail) autom
 
 * Program will auto create a config.ini after you first time run it
 * You need to fill in values for all the items thats not **[AutoGenerate]** and have no default value
+* Please **DO NOT MODIFY ANY [AutoGenerate] VALUES**
 * **config.ini default values**
 
 ```
@@ -93,7 +95,9 @@ This program will send notification through an email provider (like Gmail) autom
 
 [settings]
     internet_connection = false       // [AutoGenerate] Whether have internet connection
+                                      // **DO NOT MODIFY THIS VALUE**
     sent_weekly_email = false         // [AutoGenerate]  Whether sent current week's email
+                                      // **DO NOT MODIFY THIS VALUE**
     weekly_checking_day = 2           // When to check time & internet connection in a week, (2 = Wednesday)
     weekly_checking_time = 43200      // When to check time & internet connection on "weekly_checking_day",
                                       // always start from 0sec of the day
@@ -108,6 +112,7 @@ This program will send notification through an email provider (like Gmail) autom
     no_noti_before = 25200            // Stop sending notification before this time, value is in seconds in a day (25200=7am,7)
     no_noti_after = 79200             // Stop sending notification after this time, value is in seconds in a day (79200=10pm,22)
     last_notify_time =                // [AutoGenerate] Record of last notification time, auto set by program
+                                      // **DO NOT MODIFY THIS VALUE**
 ```
 
 * You can see which item is missing when running the program
