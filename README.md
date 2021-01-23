@@ -14,6 +14,21 @@ This program will send notification through an email provider (like Gmail) autom
 * ntplib (included .whl file in ./external_modules/)
 
 
+## How to Run this program:
+
+* Command:
+```
+python AutoSend_Notification.py
+```
+
+* You can call help menu with command:
+```
+python AutoSend_Notification.py -h
+```
+
+* Checkout [Argument List](#argument-list) for more info
+
+
 ## External requirements:
 
 
@@ -162,7 +177,7 @@ Phone No.: #
 
 ## Program Arguments
 
-### Argument list
+### Argument List
 ```
     Arguments
     
