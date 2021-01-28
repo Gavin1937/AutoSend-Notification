@@ -137,8 +137,8 @@ def main():
             condition_list = ""
             condition_list += str(int(timemonitor.getDateTimeObj().date() > config.getLastNotifyTime()))            # current time > last notify time
             logger.info("\"time_to_refresh_wkly_notification\" [%r] Whether current time > last notify time" % bool(int(condition_list[len(condition_list)-1])))
-            condition_list += str(int(timemonitor.getDateTimeObj().weekday() <= config.getNotificationUpdateDay())) # current weekday <= notification update weekday
-            logger.info("\"time_to_refresh_wkly_notification\" [%r] Whether current weekday <= notification update weekday" % bool(int(condition_list[len(condition_list)-1])))
+            condition_list += str(int(timemonitor.getDateTimeObj().weekday() >= config.getNotificationUpdateDay())) # current weekday >= notification update weekday
+            logger.info("\"time_to_refresh_wkly_notification\" [%r] Whether current weekday >= notification update weekday" % bool(int(condition_list[len(condition_list)-1])))
             time_to_refresh_wkly_notification_flag = int(condition_list,2) == int("1"*len(condition_list),2)
         logger.info("Time to refresh wkly notification status: [%r]" % time_to_refresh_wkly_notification_flag)
         
