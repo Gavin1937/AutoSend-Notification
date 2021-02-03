@@ -10,12 +10,13 @@ class EmailSender:
     def __init__(self, email_addr, password, SMTP_server):
         logger.info("Constructing EmailSender object...")
         # declare
-        self.__email_addr = None
-        self.__email_password = None
-        self.__server = None
+        self.__email_addr = email_addr
+        self.__email_password = password
+        self.__server_url = SMTP_server
+        self.__server = smtplib.SMTP()
         try:
             logger.info("Setting SMTP server...")
-            self.setServer(email_addr, password, SMTP_server)
+            self.setServer(self.__email_addr, self.__email_password, self.__server_url)
         except Exception as err:
             logger.warning("Something wrong during setting SMTP server. Exception:%s" % str(err))
             raise err
@@ -51,6 +52,21 @@ class EmailSender:
             logger.warning("Something is wrong during setting up SMTP server. Exception: %s" % str(err))
             raise err
     
+    # reconnect to SMTP server
+    def reconnect(self):
+        self.disconnect()
+        try:
+            logger.info("Reconnecting to SMTP server...")
+            self.setServer(self.__email_addr, self.__email_password, self.__server_url)
+        except Exception as err:
+            logger.warning("Something wrong during reconnecting SMTP server. Exception:%s" % str(err))
+            raise err
+    
+    # disconnect from SMTP server
+    def disconnect(self):
+        logger.info("Disconnect to SMTP server")
+        self.__server.close()
+    
     # send email
     def sendEmail(self, to_email_addr, email_subj, email_msg):
         try:
@@ -62,6 +78,7 @@ class EmailSender:
         except Exception as err:
             logger.warning("Fail to send email. Exception: %s" % str(err))
             raise err
+    
     
     # getters
     

@@ -181,12 +181,19 @@ def main():
             sch.setCurrDate(timemonitor.getDateTimeObj())
             sch.updateSpreadsheet()
             logger.info("Update google spreadsheets from internet")
+            if sch.getCurrColumn() == None:
+                logger.warning("Cannot find next column in Google Spreadsheet, Spreadsheet data is out of date.")
+                raise Exception("Cannot find next column in Google Spreadsheet, Spreadsheet data is out of date.")
             
             # find contact people
             curr_column = sch.getCurrColumn()
             sermon_person = contact.findContact(curr_column[3])
             worship_person = contact.findContact(curr_column[4])
             logger.info("Find people to contact for emails")
+            
+            # update connection with SMTP server
+            email.reconnect()
+            logger.info("Reconnect to SMTP server")
             
             # load messages from file
             logger.info("Loading messages from file %s" % config.getMsgFilePath())
@@ -232,8 +239,12 @@ def main():
             except Exception as err:
                 print("[%s] - %s" % (getSysTimeStr(), str(err)))
                 logger.warning("Fail to send email. Exception: %s" % str(err))
+            # disconnect server
+            email.disconnect()
             
         else:
+            # disconnect server
+            email.disconnect()
             print("[%s] - No more task now, sleep for %s seconds" % (getSysTimeStr(), config.getSleepTimeSec_int(timemonitor.getDateTimeObj())))
             logger.info("No more task now, sleep for %s seconds" % config.getSleepTimeSec_int(timemonitor.getDateTimeObj()))
             time.sleep(config.getSleepTimeSec_int(timemonitor.getDateTimeObj()))
