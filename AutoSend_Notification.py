@@ -104,7 +104,12 @@ def main():
                 logger.warning("Fail to send email to all. Exception: %s" % str(err))
                 raise err
         if argHdl.hasSheetColumn():
-            argHdl.printSheetColumn(sch.getCurrColumn())
+            loc_col_buf = sch.getCurrColumn()
+            if loc_col_buf != None:
+                argHdl.printSheetColumn(loc_col_buf)
+            else:
+                logger.warning("Cannot find next column in Google Spreadsheet, Spreadsheet data is out of date.")
+                raise Exception("Cannot find next column in Google Spreadsheet, Spreadsheet data is out of date.")
         print("[%s] - Exit Program" % getSysTimeStr())
         logger.info("Exit Program")
         sys.exit()
