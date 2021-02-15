@@ -18,7 +18,7 @@ class EmailSender:
             logger.info("Setting SMTP server...")
             self.setServer(self.__email_addr, self.__email_password, self.__server_url)
         except Exception as err:
-            logger.warning("Something wrong during setting SMTP server. Exception:%s" % str(err))
+            logger.warning(f"Something wrong during setting SMTP server. Exception: {str(err)}")
             raise err
     
     # destructor
@@ -49,7 +49,7 @@ class EmailSender:
             logger.info("Successfully set up SMTP server")
             
         except Exception as err:
-            logger.warning("Something is wrong during setting up SMTP server. Exception: %s" % str(err))
+            logger.warning(f"Something is wrong during setting up SMTP server. Exception: {str(err)}")
             raise err
     
     # reconnect to SMTP server
@@ -59,7 +59,7 @@ class EmailSender:
             logger.info("Reconnecting to SMTP server...")
             self.setServer(self.__email_addr, self.__email_password, self.__server_url)
         except Exception as err:
-            logger.warning("Something wrong during reconnecting SMTP server. Exception:%s" % str(err))
+            logger.warning(f"Something wrong during reconnecting SMTP server. Exception:{str(err)}")
             raise err
     
     # disconnect from SMTP server
@@ -72,11 +72,11 @@ class EmailSender:
         try:
             logger.info("Trying to send an email")
             if to_email_addr != None and email_subj != None and email_msg != None:
-                whole_email_msg = "Subject: {}\n\n{}".format(email_subj, email_msg)
+                whole_email_msg = f"Subject: {email_subj}\n\n{email_msg}"
                 self.__server.sendmail(self.__email_addr, to_email_addr, whole_email_msg.encode("utf8"))
                 logger.info("Sent email with SMTP sendmail()")
         except Exception as err:
-            logger.warning("Fail to send email. Exception: %s" % str(err))
+            logger.warning(f"Fail to send email. Exception: {str(err)}")
             raise err
     
     

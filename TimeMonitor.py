@@ -24,7 +24,7 @@ class TimeMonitor:
             logger.info("Trying to update TimeMonitor object")
             self.updateTime()
         except Exception as err:
-            logger.warning("Cannot update TimeMonitor object. Exception: %s" % str(err))
+            logger.warning(f"Cannot update TimeMonitor object. Exception: {str(err)}")
             raise err
     
     # update time and all other boolean flags
@@ -47,7 +47,7 @@ class TimeMonitor:
             output_err = None
         except Exception as err:
             self.__internet_connection_flag = False
-            logger.warning("Cannot sync with time server. Exception: %s" % str(err))
+            logger.warning(f"Cannot sync with time server. Exception: {str(err)}")
             output_err = err
         
         if output_err != None:
@@ -59,7 +59,7 @@ class TimeMonitor:
                 logger.info("Successfully open url to check time & internet connection")
             except Exception as err:
                 self.__internet_connection_flag = False
-                logger.warning("Fail to open url to check time & internet connection. Exception: %s" % str(err))
+                logger.warning(f"Fail to open url to check time & internet connection. Exception: {str(err)}")
                 raise err
             
             if self.__internet_connection_flag == True:

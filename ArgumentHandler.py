@@ -16,13 +16,13 @@ class ArgumentHandler:
                     self.__hasHelp_flag = True
                 if args == "--send2all":
                     with open(argv[ind+1], 'r', encoding="utf-8") as msg_file:
-                        logger.info("Get message from file: %s" % argv[ind+1])
+                        logger.info(f"Get message from file: {argv[ind+1]}")
                         self.__send2all_msg = msg_file.read()
                         if self.__send2all_msg != None:
                             self.__hasSend2AllMsg_flag = True
                 if args == "--sheet-col":
                     self.__next_sheet_column_flag = True
-        logger.info("Finish construction, hasArg: [%r]" % self.hasArg())
+        logger.info(f"Finish construction, hasArg: [{self.hasArg()}]")
     
     # getter
     

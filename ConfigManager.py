@@ -82,6 +82,8 @@ class ConfigManager:
     
     # check config.ini completion & logic
     def check_config(self):
+        # check config.ini
+        logger.info("Checking config file")
         while True:
             self.__config_allset = True
             logger.info("Reload config.ini")
@@ -104,9 +106,6 @@ class ConfigManager:
     # checking config.ini missing
     def __check_config_missing(self):
         missing_configs = list()
-        
-        # check config.ini
-        logger.info("Checking config file")
         
         # process admin notification configs
         enable_notiAdm_val = self.__config.get("user_info", "enable_notify_admin")
@@ -131,11 +130,11 @@ class ConfigManager:
                         continue
                     else:
                         if not at_admin_config_sect:
-                            missing_configs.insert(counter, "[%s], %s" % (sec, opt))
+                            missing_configs.insert(counter, f"[{sec}], {opt}")
                             self.__config_allset = False
                             counter += 1
                         else: # at_admin_config_sect
-                            missing_configs.append("[%s], %s" % (sec, opt))
+                            missing_configs.append(f"[{sec}], {opt}")
                             self.__config_allset = False
         
         return missing_configs
@@ -189,7 +188,7 @@ class ConfigManager:
             while counter >= 0:
                 counter += 6
                 pos1 = msg_str.find("begin]", pos2)+6
-                logger.info("Loading message block: %s" % (msg_str[msg_str.find("[",pos2+1):pos1-7]+"]"))
+                logger.info(f"Loading message block: {msg_str[msg_str.find('[',pos2+1):pos1-7]}]")
                 pos2 = msg_str.find("[", pos1)
                 msg_str_arr.append(msg_str[pos1:pos2])
                 counter = msg_str.find("begin]", counter)

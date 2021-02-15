@@ -26,7 +26,7 @@ def getSysTimeStr():
 def sendEmail2All(config, email, contact_list, message_block, subject):
     try:
         logger.info("Trying to send email to all people in contact_list.json")
-        print("[%s] - Trying to send email to all people in contact_list.json" % getSysTimeStr())
+        print(f"[{getSysTimeStr()}] - Trying to send email to all people in contact_list.json")
         buff = ""
         for person in contact_list:
             msg = message_block.replace("#", person["refer_name"])
@@ -39,7 +39,7 @@ def sendEmail2All(config, email, contact_list, message_block, subject):
                         msg2admin)
             logger.info("Sent Email to notify admin")
     except Exception as err:
-        logger.warning("Cannot send email to all people in contact_list.json. Exception: %s" % str(err))
+        logger.warning(f"Cannot send email to all people in contact_list.json. Exception: {str(err)}")
         raise err
 
 
@@ -56,12 +56,12 @@ def main():
     if argHdl.hasArg():
         if argHdl.hasHelp():
             argHdl.printHelp()
-            print("[%s] - Exit Program" % getSysTimeStr())
+            print(f"[{getSysTimeStr()}] - Exit Program")
             logger.info("Exit Program")
             sys.exit()
     
     # declaration
-    print("[%s] - Initializing program..." % getSysTimeStr())
+    print(f"[{getSysTimeStr()}] - Initializing program...")
     logger.info("Initializing program...")
     try:
         logger.info("Constructing config")
@@ -86,8 +86,8 @@ def main():
         logger.info("Finish email")
         
     except Exception as err:
-        print("[%s] - %s" % (getSysTimeStr(), str(err)))
-        logger.warning("Something is wrong during declaration. Exception: %s" % str(err))
+        print(f"[{getSysTimeStr()}] - {str(err)}")
+        logger.warning(f"Something is wrong during declaration. Exception: {str(err)}")
         logger.info("Exit program")
         sys.exit()
     whether_sent_curr_wk_email = config.getWeeklyEmailCondition_bool()
@@ -100,7 +100,7 @@ def main():
                 logger.info("Trying to send email to all")
                 sendEmail2All(config, email, contact.getContactList(), argHdl.getSend2AllMsg(), config.getMsgSbj())
             except Exception as err:
-                logger.warning("Fail to send email to all. Exception: %s" % str(err))
+                logger.warning(f"Fail to send email to all. Exception: {str(err)}")
                 raise err
         if argHdl.hasSheetColumn():
             loc_col_buf = sch.getCurrColumn()
@@ -109,7 +109,7 @@ def main():
             else:
                 logger.warning("Cannot find next column in Google Spreadsheet, Spreadsheet data is out of date.")
                 raise Exception("Cannot find next column in Google Spreadsheet, Spreadsheet data is out of date.")
-        print("[%s] - Exit Program" % getSysTimeStr())
+        print(f"[{getSysTimeStr()}] - Exit Program")
         logger.info("Exit Program")
         sys.exit()
     
@@ -117,13 +117,13 @@ def main():
     # main loop
     while True:
         # check current time
-        print("[%s] - Checking current time & internet connection..." % getSysTimeStr())
+        print(f"[{getSysTimeStr()}] - Checking current time & internet connection...")
         try:
             logger.info("Trying to check current time & internet connection...")
             timemonitor.updateTime()
         except Exception as err:
-            logger.warning("Cannot check current time & internet connection. Exception: %s" % str(err))
-            print("[%s] - %s" % (getSysTimeStr(), str(err)))
+            logger.warning(f"Cannot check current time & internet connection. Exception: {str(err)}")
+            print(f"[{getSysTimeStr()}] - {str(err)}")
         config.write2config("settings", "internet_connection", 
                             "true" if timemonitor.hasInternetConnection() else "false")
         logger.info("Update config.ini \"internet_connection\" setting")
@@ -200,7 +200,7 @@ def main():
             logger.info("Reconnect to SMTP server")
             
             # load messages from file
-            logger.info("Loading messages from file %s" % config.getMsgFilePath())
+            logger.info(f"Loading messages from file {config.getMsgFilePath()}")
             msg_str_arr = config.getMsgsFromFile()
             
             # generate messages for people
@@ -234,36 +234,35 @@ def main():
                                 "AutoSend-Notification: Email Sending Notification",
                                 msg2admin)
                     logger.info("Sent email to notify admin")
-                print("[%s] - All emails sent" % getSysTimeStr())
+                print(f"[{getSysTimeStr()}] - All emails sent")
                 whether_sent_curr_wk_email = True
                 config.setSentWklyEmail(whether_sent_curr_wk_email)
                 logger.info("Update weekly notification status, already sent notification in this week")
                 config.setLastNotifyTime(datetime.now(tz=timezone("US/Pacific")))
                 logger.info("Successfully sent email")
             except Exception as err:
-                print("[%s] - %s" % (getSysTimeStr(), str(err)))
-                logger.warning("Fail to send email. Exception: %s" % str(err))
+                print(f"[{getSysTimeStr()}] - {str(err)}")
+                logger.warning(f"Fail to send email. Exception: {str(err)}")
             # disconnect server
             email.disconnect()
             
         else:
             # disconnect server
             email.disconnect()
-            print("[%s] - No more task now, sleep for %s seconds" % (getSysTimeStr(), config.getSleepTimeSec_int(timemonitor.getDateTimeObj())))
-            logger.info("No more task now, sleep for %s seconds" % config.getSleepTimeSec_int(timemonitor.getDateTimeObj()))
+            print(f"[{getSysTimeStr()}] - No more task now, sleep for {config.getSleepTimeSec_int(timemonitor.getDateTimeObj())} seconds")
+            logger.info(f"No more task now, sleep for {config.getSleepTimeSec_int(timemonitor.getDateTimeObj())} seconds")
             time.sleep(config.getSleepTimeSec_int(timemonitor.getDateTimeObj()))
 
 
 if __name__ == "__main__":
     try:    
-        print("[%s] - Start Program" % getSysTimeStr())
+        print(f"[{getSysTimeStr()}] - Start Program")
         logger.info("Start Program")
         main()
-        print("[%s] - Exit Program" % getSysTimeStr())
+        print(f"[{getSysTimeStr()}] - Exit Program")
         logger.info("Exit Program")
     except Exception as err:
-        print("[%s] - %s" % (getSysTimeStr(), str(err)))
-        logger.warning("Something wrong with program. Exception: %s" %str(err))
-        logger.warning(str(err))
+        print(f"[{getSysTimeStr()}] - {str(err)}")
+        logger.warning(f"Something wrong with program. Exception: {str(err)}")
 
 

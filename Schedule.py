@@ -24,7 +24,7 @@ class Schedule:
             logger.info("Trying to update Google spreadsheet")
             self.updateSpreadsheet()
         except Exception as err:
-            logger.warning("Fail to update Google spreadsheet. Exception: %s" % str(err))
+            logger.warning(f"Fail to update Google spreadsheet. Exception: {str(err)}")
             raise err
     
     
@@ -43,7 +43,7 @@ class Schedule:
             creds = service_account.Credentials.from_service_account_file(
                             SERVICE_ACCOUNT_FILE, scopes=SCOPES)
         except Exception as err:
-            logger.warning("Fail to create credential with credential_key.json. Exception: %s" % str(err))
+            logger.warning(f"Fail to create credential with credential_key.json. Exception: {str(err)}")
             raise err
         
         # spreadsheet ID
@@ -55,7 +55,7 @@ class Schedule:
             service = build("sheets", "v4", credentials=creds)
             logger.info("Successfully open spreadsheet")
         except Exception as err:
-            logger.warning("Fail to open spreadsheet. Exception: %s" % str(err))
+            logger.warning(f"Fail to open spreadsheet. Exception: {str(err)}")
             raise err
         
         # Call the Sheets API
@@ -66,7 +66,7 @@ class Schedule:
                                         range=self.__spreadsheet_range).execute()
             logger.info("Successfully get data from spreadsheet")
         except Exception as err:
-            logger.warning("Fail to get data from spreadsheet. Exception: %s" % str(err))
+            logger.warning(f"Fail to get data from spreadsheet. Exception: {str(err)}")
             raise err
         
         # get 2d arr from spreadsheets
@@ -132,7 +132,10 @@ class Schedule:
             
             # update curr date buffer
             
-            check_date_flag = empty_flag != True and stop_checking_date_flag == False and match_flag == None and i[0][0].isdigit() and self.__curr_year != None
+            check_date_flag = (empty_flag != True and
+                            stop_checking_date_flag == False and
+                            match_flag == None and i[0][0].isdigit() and
+                            self.__curr_year != None)
             
             if check_date_flag:
                 temp_date = datetime.datetime.strptime(self.__curr_year+'/'+i[0], "%Y/%m/%d")
@@ -141,4 +144,4 @@ class Schedule:
                 elif temp_date.date() >= self.__curr_date.date():
                     self.__curr_column = i
                     stop_checking_date_flag = True
-                    logger.info("Found current column. Column date: %s" % i[0])
+                    logger.info(f"Found current column. Column date: {i[0]}")
