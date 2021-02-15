@@ -47,7 +47,6 @@ class Schedule:
             raise err
         
         # spreadsheet ID
-        # SAMPLE_SPREADSHEET_ID = "1FUdVpQe8WYOcYyFWFrbVJSvhVwqskRGL_8kYZCfgci4"
         SAMPLE_SPREADSHEET_ID = self.__spreadsheet_id
         
         # open spreadsheet

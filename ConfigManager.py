@@ -57,6 +57,7 @@ class ConfigManager:
     def __init__(self):
         logger.info("Constructing ConfigManager object...")
         self.__config = ConfigParser()
+        self.__config_allset = False
         logger.info("Constructed self.__config")
         config_file_exist_flag = False
         config_file_has_size_flag = False
@@ -74,59 +75,81 @@ class ConfigManager:
         else:
             logger.info("Found config.ini, read from it")
             self.__config.read("./config.ini")
+        
+        # checking config.ini status
+        self.check_config()
+    
+    
+    # check config.ini completion & logic
+    def check_config(self):
+        while True:
+            self.__config_allset = True
+            logger.info("Reload config.ini")
+            self.__config.read("./config.ini")
+            
+            # prompt user to fill in config.ini
+            for mis in self.__check_config_missing():
+                print(f"[{getSysTimeStr()}] - Please fill in missing configuration: {mis}")
+            for lg in self.__check_config_logic():
+                print(f"[{getSysTimeStr()}] - {lg}")
+            
+            if not self.__config_allset:
+                input("Press any key to reload config.ini")
+            else:
+                print(f"[{getSysTimeStr()}] - Config file is complete")
+                logger.info("Config file is complete")
+                break
     
     
     # checking config.ini missing
-    def check_config_missing(self):
-        have_all_config = False
+    def __check_config_missing(self):
         missing_configs = list()
         
+        # check config.ini
         logger.info("Checking config file")
-        while not have_all_config:
-            logger.info("Reload config.ini")
-            self.__config.read("./config.ini")
-            missing_configs.clear()
-            # check config.ini
-            all_sections = self.__config.sections()
-            
-            # process admin notification configs
-            enable_notiAdm_val = self.__config.get("user_info", "enable_notify_admin")
-            adm_EmailAddr_val = self.__config.get("user_info", "admin_email_addr")
-            if len(enable_notiAdm_val) <= 0 and len(adm_EmailAddr_val) <= 0:
-                missing_configs.append("[%s], %s" % ("user_info", "enable_notify_admin"))
-                missing_configs.append("[%s], %s" % ("user_info", "admin_email_addr"))
-            elif (self.__config.getboolean("user_info", "enable_notify_admin") == True and
-                len(adm_EmailAddr_val) <= 0):
-                missing_configs.append("[%s], %s" % ("user_info", "admin_email_addr"))
-            
-            at_admin_config_sect = False
-            counter = 0
-            for sec in all_sections:
-                all_options = self.__config.options(sec)
-                for opt in all_options:
-                    item = self.__config.get(sec, opt)
-                    if opt == "admin_email_addr":
-                        at_admin_config_sect = True
-                    if len(item) <= 0: # empty string
-                        # skip empty last_notify_time
-                        if opt == "last_notify_time" or opt == "enable_notify_admin" or opt == "admin_email_addr": 
-                            continue
-                        else:
-                            have_all_config = False
-                            if not at_admin_config_sect:
-                                missing_configs.insert(counter, "[%s], %s" % (sec, opt))
-                                counter += 1
-                            else: # at_admin_config_sect
-                                missing_configs.append("[%s], %s" % (sec, opt))
-            if len(missing_configs) == 0:
-                have_all_config = True
-                print("[%s] - Config file is complete" % getSysTimeStr())
-                logger.info("Config file is complete")
-                break
-            # prompt user to fill in config.ini
-            for mis in missing_configs:
-                print("[%s] - Please fill in missing configuration: %s" % (getSysTimeStr(), mis))
-            input("Press any key to reload config.ini")
+        
+        # process admin notification configs
+        enable_notiAdm_val = self.__config.get("user_info", "enable_notify_admin")
+        adm_EmailAddr_val = self.__config.get("user_info", "admin_email_addr")
+        if len(enable_notiAdm_val) <= 0 and len(adm_EmailAddr_val) <= 0:
+            missing_configs.append("[user_info], enable_notify_admin")
+            missing_configs.append("[user_info], admin_email_addr")
+        elif (self.__config.getboolean("user_info", "enable_notify_admin") == True and
+            len(adm_EmailAddr_val) <= 0):
+            missing_configs.append("[user_info], admin_email_addr")
+        
+        at_admin_config_sect = False
+        counter = 0
+        for sec in self.__config.sections():
+            for opt in self.__config.options(sec):
+                item = self.__config.get(sec, opt)
+                if opt == "admin_email_addr":
+                    at_admin_config_sect = True
+                if len(item) <= 0: # empty string
+                    # skip empty last_notify_time
+                    if opt == "last_notify_time" or opt == "enable_notify_admin" or opt == "admin_email_addr": 
+                        continue
+                    else:
+                        if not at_admin_config_sect:
+                            missing_configs.insert(counter, "[%s], %s" % (sec, opt))
+                            self.__config_allset = False
+                            counter += 1
+                        else: # at_admin_config_sect
+                            missing_configs.append("[%s], %s" % (sec, opt))
+                            self.__config_allset = False
+        
+        return missing_configs
+    
+    # check logic in config.ini options
+    def __check_config_logic(self):
+        msg = list()
+        
+        if (self.getWeeklyEmailCondition_bool() == True and
+            self.getLastNotifyTime() == None):
+            msg.append("[notification_time], last_notify_time cannot be empty if [settings], sent_weekly_email = true.")
+            self.__config_allset = False
+        
+        return msg
     
     # writting to config.ini
     def write_basic_info2Config(self):

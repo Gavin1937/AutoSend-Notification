@@ -66,7 +66,6 @@ def main():
     try:
         logger.info("Constructing config")
         config = ConfigManager.ConfigManager()
-        config.check_config_missing()
         logger.info("Finish config")
         
         logger.info("Constructing timemonitor")
