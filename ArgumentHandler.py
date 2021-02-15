@@ -55,11 +55,11 @@ class ArgumentHandler:
     def hasArg(self):
         condition_list = ""
         condition_list += str(int(self.hasHelp()))
-        logger.info("\"ArgumentHandler\" [%r] hasHelp()" % bool(int(condition_list[len(condition_list)-1])))
+        logger.info(f"\"ArgumentHandler\" [{self.hasHelp()}] hasHelp()")
         condition_list += str(int(self.hasSend2AllMsg()))
-        logger.info("\"ArgumentHandler\" [%r] hasSend2AllMsg()" % bool(int(condition_list[len(condition_list)-1])))
+        logger.info(f"\"ArgumentHandler\" [{self.hasSend2AllMsg()}] hasSend2AllMsg()")
         condition_list += str(int(self.hasSheetColumn()))
-        logger.info("\"ArgumentHandler\" [%r] hasSheetColumn()" % bool(int(condition_list[len(condition_list)-1])))
+        logger.info(f"\"ArgumentHandler\" [{self.hasSheetColumn()}] hasSheetColumn()")
         return (int(condition_list, 2) != 0)
     
     def hasHelp(self):

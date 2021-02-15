@@ -1,5 +1,3 @@
-from configparser import ConfigParser
-import os
 from datetime import datetime, timedelta
 from My_Logger import logger
 
@@ -55,6 +53,10 @@ class ConfigManager:
     
     # default constructor
     def __init__(self):
+        # import libs
+        import os
+        from configparser import ConfigParser
+        
         logger.info("Constructing ConfigManager object...")
         self.__config = ConfigParser()
         self.__config_allset = False
@@ -177,7 +179,7 @@ class ConfigManager:
             logger.warning("Canont open message file due to missing filepath")
             return None
         msg_str_arr = list()
-        logger.info("Open message file: %s" % self.__config.get("user_info", "messages_file_path"))
+        logger.info(f"Open message file: {self.__config.get('user_info', 'messages_file_path')}")
         with open(msg_filepath, 'r', encoding="utf-8") as msg_file:
             # buffers
             msg_str = msg_file.read()

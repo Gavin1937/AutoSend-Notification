@@ -1,20 +1,5 @@
-
-import locale
-from datetime import datetime, timedelta
-from pytz import timezone
-import time
-import sys
-
-# additional modules
-import TimeMonitor
-import Contact
-import Schedule
-import EmailSender
-from MsgGenerator import *
-import ConfigManager
-from ConfigManager import datetime2sec, sec2datetime
-import ArgumentHandler
 from My_Logger import logger
+from datetime import datetime
 
 
 
@@ -44,6 +29,11 @@ def sendEmail2All(config, email, contact_list, message_block, subject):
 
 
 def main():
+    # import libs
+    import locale
+    import sys
+    import ArgumentHandler
+    
     # set locale
     locale.setlocale(locale.LC_ALL, '')
     logger.info("Set locale")
@@ -64,6 +54,11 @@ def main():
     print(f"[{getSysTimeStr()}] - Initializing program...")
     logger.info("Initializing program...")
     try:
+        # import libs
+        import ConfigManager
+        import TimeMonitor
+        import Contact
+        
         logger.info("Constructing config")
         config = ConfigManager.ConfigManager()
         logger.info("Finish config")
@@ -76,15 +71,6 @@ def main():
         contact = Contact.Contact()
         logger.info("Finish contact")
         
-        logger.info("Constructing sch")
-        sch = Schedule.Schedule(config.getSpreadsheetID(), config.getSpreadsheetRange(), 
-                                timemonitor.getDateTimeObj())
-        logger.info("Finish sch")
-        
-        logger.info("Constructing email")
-        email = EmailSender.EmailSender(config.getUserEmailAddr(), config.getUserEmailPsw(), config.getSMTPserver())
-        logger.info("Finish email")
-        
     except Exception as err:
         print(f"[{getSysTimeStr()}] - {str(err)}")
         logger.warning(f"Something is wrong during declaration. Exception: {str(err)}")
@@ -95,6 +81,19 @@ def main():
     
     # handle argv
     if argHdl.hasArg():
+        # import libs
+        import Schedule
+        import EmailSender
+        # initialize sch
+        logger.info("Constructing sch")
+        sch = Schedule.Schedule(config.getSpreadsheetID(), config.getSpreadsheetRange(), 
+                                timemonitor.getDateTimeObj())
+        logger.info("Finish sch")
+        # initialize email
+        logger.info("Constructing email")
+        email = EmailSender.EmailSender(config.getUserEmailAddr(), config.getUserEmailPsw(), config.getSMTPserver())
+        logger.info("Finish email")
+        
         if argHdl.hasSend2AllMsg():
             try:
                 logger.info("Trying to send email to all")
@@ -116,6 +115,10 @@ def main():
     
     # main loop
     while True:
+        # import libs
+        from ConfigManager import datetime2sec
+        import time
+        
         # check current time
         print(f"[{getSysTimeStr()}] - Checking current time & internet connection...")
         try:
@@ -132,19 +135,19 @@ def main():
         condition_list = ""
         # collecting & logging conditions
         condition_list += str(int(config.getLastNotifyTime() == None))                                          # don't have last notify time
-        logger.info("\"time_to_refresh_wkly_notification\" [%r] Whether last notify time is empty" % bool(int(condition_list[len(condition_list)-1])))
+        logger.info(f"\"time_to_refresh_wkly_notification\" [{(config.getLastNotifyTime() == None)}] Whether last notify time is empty")
         condition_list += str(int(config.getWeeklyEmailCondition_bool() == False))                              # haven't send email this week
-        logger.info("\"time_to_refresh_wkly_notification\" [%r] Didn't send email this week" % bool(int(condition_list[len(condition_list)-1])))
+        logger.info(f"\"time_to_refresh_wkly_notification\" [{(config.getWeeklyEmailCondition_bool() == False)}] Didn't send email this week")
         time_to_refresh_wkly_notification_flag = int(condition_list,2) == int("1"*len(condition_list),2)
         # or
         if not time_to_refresh_wkly_notification_flag:
             condition_list = ""
             condition_list += str(int(timemonitor.getDateTimeObj().date() > config.getLastNotifyTime()))            # current time > last notify time
-            logger.info("\"time_to_refresh_wkly_notification\" [%r] Whether current time > last notify time" % bool(int(condition_list[len(condition_list)-1])))
+            logger.info(f"\"time_to_refresh_wkly_notification\" [{(timemonitor.getDateTimeObj().date() > config.getLastNotifyTime())}] Whether current time > last notify time")
             condition_list += str(int(timemonitor.getDateTimeObj().weekday() >= config.getNotificationUpdateDay())) # current weekday >= notification update weekday
-            logger.info("\"time_to_refresh_wkly_notification\" [%r] Whether current weekday >= notification update weekday" % bool(int(condition_list[len(condition_list)-1])))
+            logger.info(f"\"time_to_refresh_wkly_notification\" [{(timemonitor.getDateTimeObj().weekday() >= config.getNotificationUpdateDay())}] Whether current weekday >= notification update weekday")
             time_to_refresh_wkly_notification_flag = int(condition_list,2) == int("1"*len(condition_list),2)
-        logger.info("Time to refresh wkly notification status: [%r]" % time_to_refresh_wkly_notification_flag)
+        logger.info(f"Time to refresh wkly notification status: [{time_to_refresh_wkly_notification_flag}]")
         
         # reset weekly notification flag if is new week
         if time_to_refresh_wkly_notification_flag:
@@ -162,24 +165,41 @@ def main():
         condition_list = ""
         # collecting & logging conditions
         condition_list += str(int(timemonitor.hasInternetConnection()))        # currently has internet connection
-        logger.info("\"time_to_send_notification\" [%r] Whether have internet" % bool(int(condition_list[len(condition_list)-1])))
+        logger.info(f"\"time_to_send_notification\" [{timemonitor.hasInternetConnection()}] Whether have internet")
         condition_list += str(int(timemonitor.hasTime()))                      # currently timemonitor has datetime value
-        logger.info("\"time_to_send_notification\" [%r] Whether have time in TimeMonitor" % bool(int(condition_list[len(condition_list)-1])))
+        logger.info(f"\"time_to_send_notification\" [{timemonitor.hasTime()}] Whether have time in TimeMonitor")
         condition_list += str(int(whether_sent_curr_wk_email == False))        # haven't send this week's email
-        logger.info("\"time_to_send_notification\" [%r] Didn't sent current week's email" % bool(int(condition_list[len(condition_list)-1])))
+        logger.info(f"\"time_to_send_notification\" [{(whether_sent_curr_wk_email == False)}] Didn't sent current week's email")
         condition_list += str(int(curr_time.weekday() >= wkDay))               # current weekday >= weekday for notification
-        logger.info("\"time_to_send_notification\" [%r] Whether Current weekday is equal/later than set weekday" % bool(int(condition_list[len(condition_list)-1])))
+        logger.info(f"\"time_to_send_notification\" [{(curr_time.weekday() >= wkDay)}] Whether Current weekday is equal/later than set weekday")
         condition_list += str(int(datetime2sec(curr_time) >= wklyNotiAft))     # current time is >= weekly notification time (sec)
-        logger.info("\"time_to_send_notification\" [%r] Whether is time to send email" % bool(int(condition_list[len(condition_list)-1])))
+        logger.info(f"\"time_to_send_notification\" [{(datetime2sec(curr_time) >= wklyNotiAft)}] Whether is time to send email")
         condition_list += str(int(datetime2sec(curr_time) < noNotiAft))        # current time is within no notification time limit 1 (sec)
-        logger.info("\"time_to_send_notification\" [%r] Wether current time is less than no_noti_after" % bool(int(condition_list[len(condition_list)-1])))
+        logger.info(f"\"time_to_send_notification\" [{(datetime2sec(curr_time) < noNotiAft)}] Wether current time is less than no_noti_after")
         condition_list += str(int(datetime2sec(curr_time) >= noNotiBef))       # current time is out of no notification time limit 2 (sec)
-        logger.info("\"time_to_send_notification\" [%r] Wether current time is greater/equal to no_noti_before" % bool(int(condition_list[len(condition_list)-1])))
+        logger.info(f"\"time_to_send_notification\" [{(datetime2sec(curr_time) >= noNotiBef)}] Wether current time is greater/equal to no_noti_before")
         
         time_to_send_notification = int(condition_list, 2) == int("1"*len(condition_list), 2)
-        logger.info("Time to send notification status: [%r]" % time_to_send_notification)
+        logger.info(f"Time to send notification status: [{time_to_send_notification}]")
         if time_to_send_notification:
-            print("[%s] - Prepare to send email..." % getSysTimeStr())
+            # import libs
+            from MsgGenerator import getSermonMsg, getWorshipMsg, getFullEmailMsg
+            from pytz import timezone
+            import Schedule
+            import EmailSender
+            
+            # initialize sch
+            logger.info("Constructing sch")
+            sch = Schedule.Schedule(config.getSpreadsheetID(), config.getSpreadsheetRange(), 
+                                    timemonitor.getDateTimeObj())
+            logger.info("Finish sch")
+            # initialize email
+            logger.info("Constructing email")
+            email = EmailSender.EmailSender(config.getUserEmailAddr(), config.getUserEmailPsw(), config.getSMTPserver())
+            logger.info("Finish email")
+            
+            
+            print(f"[{getSysTimeStr()}] - Prepare to send email...")
             logger.info("Prepare to send email...")
             # update schedule from google spreadsheets
             sch.setCurrDate(timemonitor.getDateTimeObj())
@@ -194,10 +214,6 @@ def main():
             sermon_person = contact.findContact(curr_column[3])
             worship_person = contact.findContact(curr_column[4])
             logger.info("Find people to contact for emails")
-            
-            # update connection with SMTP server
-            email.reconnect()
-            logger.info("Reconnect to SMTP server")
             
             # load messages from file
             logger.info(f"Loading messages from file {config.getMsgFilePath()}")
@@ -247,8 +263,6 @@ def main():
             email.disconnect()
             
         else:
-            # disconnect server
-            email.disconnect()
             print(f"[{getSysTimeStr()}] - No more task now, sleep for {config.getSleepTimeSec_int(timemonitor.getDateTimeObj())} seconds")
             logger.info(f"No more task now, sleep for {config.getSleepTimeSec_int(timemonitor.getDateTimeObj())} seconds")
             time.sleep(config.getSleepTimeSec_int(timemonitor.getDateTimeObj()))

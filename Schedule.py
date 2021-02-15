@@ -1,11 +1,3 @@
-import re # regex
-import datetime as datetime
-
-# google APIs
-from googleapiclient.discovery import build
-from google.oauth2 import service_account
-
-# logger
 from My_Logger import logger
 
 
@@ -32,6 +24,10 @@ class Schedule:
     # this function is created base on video:
     # https://www.youtube.com/watch?v=4ssigWmExak
     def updateSpreadsheet(self):
+        # import google APIs
+        from googleapiclient.discovery import build
+        from google.oauth2 import service_account
+        
         # credential file
         SERVICE_ACCOUNT_FILE = "credential_key.json"
         SCOPES = ["https://www.googleapis.com/auth/spreadsheets.readonly"]
@@ -111,6 +107,10 @@ class Schedule:
     
     # private: find current year & next column (date)
     def __find_curr_year_column(self):
+        # import libs
+        import re # regex
+        import datetime as datetime
+        
         self.__curr_year = ""
         last_date = self.__curr_date
         

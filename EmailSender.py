@@ -1,5 +1,3 @@
-import smtplib
-
 from My_Logger import logger
 
 # This class is created with tutorial from:
@@ -8,6 +6,9 @@ class EmailSender:
     
     # constructor
     def __init__(self, email_addr, password, SMTP_server):
+        # import libs
+        import smtplib
+        
         logger.info("Constructing EmailSender object...")
         # declare
         self.__email_addr = email_addr
@@ -28,6 +29,9 @@ class EmailSender:
     
     # set server interface, also can re-login to an email
     def setServer(self, email_addr, password, SMTP_server):
+        # import libs
+        import smtplib
+        
         if email_addr != None:
             self.__email_addr = email_addr
         if password != None:

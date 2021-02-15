@@ -1,13 +1,3 @@
-from urllib.request import urlopen
-from datetime import datetime, timedelta
-import time
-from time import mktime
-from pytz import timezone
-import pytz
-
-# external module
-import ntplib
-
 from My_Logger import logger
 
 class TimeMonitor:
@@ -29,6 +19,15 @@ class TimeMonitor:
     
     # update time and all other boolean flags
     def updateTime(self):
+        # import libs
+        from urllib.request import urlopen
+        from datetime import datetime, timedelta
+        import time
+        from time import mktime
+        from pytz import timezone
+        # external module
+        import ntplib
+        
         # update time
         output_err = None
         

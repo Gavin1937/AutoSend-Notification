@@ -1,4 +1,3 @@
-import json 
 from My_Logger import logger
 
 # store all contact info on RAM
@@ -6,6 +5,9 @@ class Contact:
     
     # constructor
     def __init__(self):
+        # import libs
+        import json 
+        
         logger.info("Constructing Contact object...")
         self.__file_exist_flag = True
         self.__contact_list = list()
