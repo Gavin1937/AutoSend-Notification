@@ -1,3 +1,4 @@
+import gc
 from My_Logger import logger
 from datetime import datetime
 
@@ -213,6 +214,7 @@ def main():
             curr_column = sch.getCurrColumn()
             sermon_person = contact.findContact(curr_column[3])
             worship_person = contact.findContact(curr_column[4])
+            del curr_column
             logger.info("Find people to contact for emails")
             
             # load messages from file
@@ -262,7 +264,45 @@ def main():
             # disconnect server
             email.disconnect()
             
+            # remove imported modules, functions, and objects
+            # obj
+            del email
+            del sch
+            del sermon_person
+            del worship_person
+            del msg_str_arr
+            del msg2admin
+            # function
+            del getSermonMsg
+            del getWorshipMsg
+            del getFullEmailMsg
+            # module
+            del Schedule
+            del EmailSender
+            
+            # remove caches from main loop
+            del datetime2sec
+            del condition_list
+            del wkDay
+            del wklyNotiAft
+            del noNotiBef
+            del noNotiAft
+            del curr_time
+            # force Garbage Collector to release unreferenced memory
+            gc.collect()
+            
         else:
+            # remove caches from main loop
+            del datetime2sec
+            del condition_list
+            del wkDay
+            del wklyNotiAft
+            del noNotiBef
+            del noNotiAft
+            del curr_time
+            # force Garbage Collector to release unreferenced memory
+            gc.collect()
+            
             print(f"[{getSysTimeStr()}] - No more task now, sleep for {config.getSleepTimeSec_int(timemonitor.getDateTimeObj())} seconds")
             logger.info(f"No more task now, sleep for {config.getSleepTimeSec_int(timemonitor.getDateTimeObj())} seconds")
             time.sleep(config.getSleepTimeSec_int(timemonitor.getDateTimeObj()))

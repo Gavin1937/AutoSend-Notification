@@ -24,7 +24,7 @@ class EmailSender:
     
     # destructor
     def __del__(self):
-        self.__server.quit()
+        self.disconnect()
         logger.info("Destruct EmailSender object & Quit from SMTP server")
     
     # set server interface, also can re-login to an email
@@ -69,7 +69,8 @@ class EmailSender:
     # disconnect from SMTP server
     def disconnect(self):
         logger.info("Disconnect to SMTP server")
-        self.__server.close()
+        self.__server.connect(self.__server_url)
+        self.__server.quit()
     
     # send email
     def sendEmail(self, to_email_addr, email_subj, email_msg):
