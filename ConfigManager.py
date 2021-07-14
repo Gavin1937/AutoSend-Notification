@@ -88,8 +88,7 @@ class ConfigManager:
         logger.info("Checking config file")
         while True:
             self.__config_allset = True
-            logger.info("Reload config.ini")
-            self.__config.read("./config.ini")
+            self.update_config()
             
             # prompt user to fill in config.ini
             for mis in self.__check_config_missing():
@@ -104,6 +103,9 @@ class ConfigManager:
                 logger.info("Config file is complete")
                 break
     
+    def update_config(self):
+        logger.info("Update config.ini")
+        self.__config.read("./config.ini")
     
     # checking config.ini missing
     def __check_config_missing(self):

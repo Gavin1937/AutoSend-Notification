@@ -5,17 +5,18 @@ class Contact:
     
     # constructor
     def __init__(self):
-        # import libs
-        import json 
-        
         logger.info("Constructing Contact object...")
         self.__file_exist_flag = True
         self.__contact_list = list()
         
+        self.updateContact()
+    
+    
+    def updateContact(self):
         # Opening JSON file 
         try:
             logger.info("Trying to open contact_list.json")
-            f = open('contact_list.json',) 
+            f = open('contact_list.json', 'r') 
             logger.info("Successfully open contact_list.json")
         except:
             logger.warning("Cannot open contact_list.json. Exception: Cannot Open file \"contact_list.json\" under current directory")
@@ -23,6 +24,9 @@ class Contact:
             raise Exception("Cannot Open file \"contact_list.json\" under current directory")
         
         if self.__file_exist_flag == True:
+            # import libs
+            import json 
+            
             # returns JSON object as  
             # a dictionary 
             data = json.load(f) 
@@ -37,7 +41,6 @@ class Contact:
             # Closing file 
             f.close() 
             logger.info("Closing contact_list.json")
-    
     
     # find function
     def findContact(self, name):

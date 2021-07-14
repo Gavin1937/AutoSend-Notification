@@ -120,6 +120,10 @@ def main():
         from ConfigManager import datetime2sec
         import time
         
+        # update config & contact file
+        config.update_config()
+        contact.updateContact()
+        
         # check current time
         print(f"[{getSysTimeStr()}] - Checking current time & internet connection...")
         try:
