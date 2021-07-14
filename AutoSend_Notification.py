@@ -252,9 +252,7 @@ def main():
                     email.sendEmail(worship_person["email"], config.getMsgSbj(), worship_person_msg)
                     logger.info("Sent email to worship leader")
                 if config.isEnableNotiAdmin():
-                    email.sendEmail(config.getAdminEmailAddr(),
-                                "AutoSend-Notification: Email Sending Notification",
-                                msg2admin)
+                    email.sendEmail(config.getAdminEmailAddr(), config.getMsgSbj(), msg2admin)
                     logger.info("Sent email to notify admin")
                 print(f"[{getSysTimeStr()}] - All emails sent")
                 whether_sent_curr_wk_email = True
