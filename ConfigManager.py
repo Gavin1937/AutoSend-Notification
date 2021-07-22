@@ -1,4 +1,4 @@
-from datetime import datetime, timedelta
+from datetime import datetime, timedelta, tzinfo
 from My_Logger import logger
 
 
@@ -36,13 +36,15 @@ notification_time_arr = {
 }
 
 # global functions
-def sec2datetime(seconds):
+def sec2datetime(seconds: int) -> datetime:
+    """Convert seconds into datetime since 1970"""
     sec = timedelta(seconds)
     return (datetime(1,1,1) + sec)
 
-def datetime2sec(date):
-    sec = (date - date.replace(hour=0, minute=0, second=0, microsecond=0)).total_seconds()
-    return int(sec)
+def datetime2sec(date: datetime) -> int:
+    """Get total seconds since start of input date"""
+    total_sec = date.second + (date.minute*60) + (date.hour*3600)
+    return int(total_sec)
 
 # get current system time string fmt=%Y-%m-%d %H:%M:%S.%f
 def getSysTimeStr():
