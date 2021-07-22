@@ -1,4 +1,4 @@
-from datetime import datetime, timedelta, tzinfo
+from datetime import datetime, timedelta
 from My_Logger import logger
 
 
@@ -43,8 +43,10 @@ def sec2datetime(seconds: int) -> datetime:
 
 def datetime2sec(date: datetime) -> int:
     """Get total seconds since start of input date"""
-    total_sec = date.second + (date.minute*60) + (date.hour*3600)
-    return int(total_sec)
+    if date != None:
+        total_sec = date.second + (date.minute*60) + (date.hour*3600)
+        return int(total_sec)
+    else: return 0
 
 # get current system time string fmt=%Y-%m-%d %H:%M:%S.%f
 def getSysTimeStr():
