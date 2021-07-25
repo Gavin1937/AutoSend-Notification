@@ -110,7 +110,9 @@ class ConfigManager:
     def update_config(self):
         """Write data in RAM to config.ini to update it"""
         logger.info("Update config.ini")
-        self.__config.write("./config.ini")
+        file = open("./config.ini", 'w')
+        self.__config.write(file)
+        file.close()
     
     def reload_config(self):
         """Read data from config.ini to reload config in RAM"""
