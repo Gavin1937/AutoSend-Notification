@@ -121,7 +121,7 @@ def main():
         import time
         
         # update config & contact file
-        config.update_config()
+        config.update_reload_config()
         contact.updateContact()
         
         # check current time
@@ -260,6 +260,7 @@ def main():
                 logger.info("Update weekly notification status, already sent notification in this week")
                 config.setLastNotifyTime(datetime.now(tz=timezone("US/Pacific")))
                 logger.info("Successfully sent email")
+                config.update_config()
             except Exception as err:
                 print(f"[{getSysTimeStr()}] - {str(err)}")
                 logger.warning(f"Fail to send email. Exception: {str(err)}")

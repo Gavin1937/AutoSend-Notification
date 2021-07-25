@@ -108,8 +108,18 @@ class ConfigManager:
                 break
     
     def update_config(self):
+        """Write data in RAM to config.ini to update it"""
         logger.info("Update config.ini")
+        self.__config.write("./config.ini")
+    
+    def reload_config(self):
+        """Read data from config.ini to reload config in RAM"""
+        logger.info("Reload config.ini")
         self.__config.read("./config.ini")
+    
+    def update_reload_config(self):
+        self.update_config()
+        self.reload_config()
     
     # checking config.ini missing
     def __check_config_missing(self):
