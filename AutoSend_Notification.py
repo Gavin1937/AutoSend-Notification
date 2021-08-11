@@ -283,32 +283,22 @@ def main():
             del Schedule
             del EmailSender
             
-            # remove caches from main loop
-            del datetime2sec
-            del condition_list
-            del wkDay
-            del wklyNotiAft
-            del noNotiBef
-            del noNotiAft
-            del curr_time
-            # force Garbage Collector to release unreferenced memory
-            gc.collect()
-            
         else:
-            # remove caches from main loop
-            del datetime2sec
-            del condition_list
-            del wkDay
-            del wklyNotiAft
-            del noNotiBef
-            del noNotiAft
-            del curr_time
-            # force Garbage Collector to release unreferenced memory
-            gc.collect()
-            
             print(f"[{getSysTimeStr()}] - No more task now, sleep for {config.getSleepTimeSec_int(timemonitor.getDateTimeObj())} seconds")
             logger.info(f"No more task now, sleep for {config.getSleepTimeSec_int(timemonitor.getDateTimeObj())} seconds")
             time.sleep(config.getSleepTimeSec_int(timemonitor.getDateTimeObj()))
+            
+        
+        # remove caches from main loop
+        del datetime2sec
+        del condition_list
+        del wkDay
+        del wklyNotiAft
+        del noNotiBef
+        del noNotiAft
+        del curr_time
+        # force Garbage Collector to release unreferenced memory
+        gc.collect()
 
 
 if __name__ == "__main__":
