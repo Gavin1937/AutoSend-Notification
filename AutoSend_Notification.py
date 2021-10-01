@@ -1,3 +1,5 @@
+import sys
+import os
 import gc
 from My_Logger import logger
 from datetime import datetime
@@ -32,7 +34,6 @@ def sendEmail2All(config, email, contact_list, message_block, subject):
 def main():
     # import libs
     import locale
-    import sys
     import ArgumentHandler
     
     # set locale
@@ -132,9 +133,11 @@ def main():
         except Exception as err:
             logger.warning(f"Cannot check current time & internet connection. Exception: {str(err)}")
             print(f"[{getSysTimeStr()}] - {str(err)}")
-        config.write2config("settings", "internet_connection", 
-                            "true" if timemonitor.hasInternetConnection() else "false")
-        logger.info("Update config.ini \"internet_connection\" setting")
+            config.write2config("settings", "internet_connection", "false")
+            logger.info(f"Update config.ini: \"internet_connection\" = [{timemonitor.hasInternetConnection()}]")
+            raise ValueError("No Internet Connection")
+        config.write2config("settings", "internet_connection", "true")
+        logger.info(f"Update config.ini: \"internet_connection\" = [{timemonitor.hasInternetConnection()}]")
         
         
         condition_list = ""
@@ -302,14 +305,26 @@ def main():
 
 
 if __name__ == "__main__":
-    try:    
-        print(f"[{getSysTimeStr()}] - Start Program")
-        logger.info("Start Program")
-        main()
-        print(f"[{getSysTimeStr()}] - Exit Program")
-        logger.info("Exit Program")
-    except Exception as err:
-        print(f"[{getSysTimeStr()}] - {str(err)}")
-        logger.warning(f"Something wrong with program. Exception: {str(err)}")
+    while True:
+        try:    
+            print(f"[{getSysTimeStr()}] - Start Program")
+            logger.info("Start Program")
+            main()
+            print(f"[{getSysTimeStr()}] - Exit Program")
+            logger.info("Exit Program")
+        except KeyboardInterrupt:
+            gc.collect()
+            print()
+            try:
+                sys.exit(0)
+            except SystemExit:
+                os._exit(0)
+        except ValueError as verr:
+            from time import sleep
+            if "No Internet Connection" in str(verr):
+                sleep(1800)
+        except Exception as err:
+            print(f"[{getSysTimeStr()}] - {str(err)}")
+            logger.warning(f"Something wrong with program. Exception: {str(err)}")
 
 
