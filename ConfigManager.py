@@ -285,21 +285,46 @@ class ConfigManager:
         wkly_chk_day = self.__config.getint("settings", "weekly_checking_day")
         wkly_chk_time = self.__config.getint("settings", "weekly_checking_time")
         sent_wkly_email = self.__config.getboolean("settings", "sent_weekly_email")
+        last_notitime = datetime.strptime(
+            self.__config.get("notification_time", "last_notify_time"),
+            "%Y-%m-%d"
+        )
+        next_updatetime = curr_time
         
-        # get next notification datetime
-        if curr_time.weekday() <= wkly_chk_day and not sent_wkly_email: # today is before/equal set wkly_chk_day (weekday)
-            wkly_chk_day_datetime = datetime(curr_time.year, curr_time.month, curr_time.day)
-            wkly_chk_day_datetime += timedelta(wkly_chk_day-curr_time.weekday())
-        else: # today is after set wkly_chk_day (weekday)
-            wkly_chk_day_datetime = datetime(curr_time.year, curr_time.month, curr_time.day)
-            wkly_chk_day_datetime -= timedelta(curr_time.weekday()-wkly_chk_day)
-            wkly_chk_day_datetime += timedelta(7)
-        
-        # add exact hh:mm:ss to next notification datetime
-        wkly_chk_day_datetime += timedelta(0, wkly_chk_time)
+        if sent_wkly_email and curr_time > last_notitime: # already sent this week's email
+            # calc how many days to next week's checking date
+            weekday_counter = 0
+            while True:
+                if ((curr_time.weekday()+weekday_counter) % 7) == wkly_chk_day:
+                    break
+                weekday_counter += 1
+            
+            tmp = curr_time + timedelta(seconds=weekday_counter*24*3600)
+            next_updatetime = datetime(tmp.year, tmp.month, tmp.day) + timedelta(seconds=wkly_chk_time)
+            
+        else: # did not sent this week's email
+            wkly_noti_after = self.__config.getint("notification_time", "wkly_noti_after")
+            no_noti_before = self.__config.getint("notification_time", "no_noti_before")
+            no_noti_after = self.__config.getint("notification_time", "no_noti_after")
+            curr_sec = datetime2sec(curr_time)
+            
+            # find next avaliable time
+            if ((curr_sec >= no_noti_before) and
+                (curr_sec <= no_noti_after) and
+                (curr_sec >= wkly_noti_after)
+            ): # current time within a day's avaliable sending time
+                # update now
+                return 0
+                
+            else: # current time is out of a day's avaliable sending time
+                # update in tomorrow at wkly_noti_after time
+                next_updatetime = (
+                    datetime(curr_time.year, curr_time.month, curr_time.day) +
+                    timedelta(seconds=24*3600) + timedelta(seconds=wkly_noti_after)
+                )
         
         # get total seconds between next notification datetime and now
-        sec = int((wkly_chk_day_datetime - curr_time).total_seconds())
+        sec = int((next_updatetime - curr_time).total_seconds())
         return sec
     
     
