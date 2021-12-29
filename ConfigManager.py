@@ -324,7 +324,7 @@ class ConfigManager:
                 )
         
         # get total seconds between next notification datetime and now
-        sec = int((next_updatetime - curr_time).total_seconds())
+        sec = int((next_updatetime - curr_time).total_seconds()) + 1
         return sec
     
     
