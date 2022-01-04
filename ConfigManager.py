@@ -293,7 +293,7 @@ class ConfigManager:
         
         if sent_wkly_email and curr_time > last_notitime: # already sent this week's email
             # calc how many days to next week's checking date
-            weekday_counter = 0
+            weekday_counter = 1
             while True:
                 if ((curr_time.weekday()+weekday_counter) % 7) == wkly_chk_day:
                     break
