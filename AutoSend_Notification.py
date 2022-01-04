@@ -320,9 +320,20 @@ if __name__ == "__main__":
             except SystemExit:
                 os._exit(0)
         except ValueError as verr:
-            from time import sleep
+            print(f"Exception: {verr}")
+            logger.warning(f"Exception: {verr}")
+            
+            # sleep for 30 min to wait for internet come back
             if "No Internet Connection" in str(verr):
+                from time import sleep
                 sleep(1800)
+            
+            # hard clean before reenter main()
+            gc.collect()
+            for var in dir():
+                if var[0:2] != "__":
+                    del globals()[var]
+            
         except Exception as err:
             print(f"[{getSysTimeStr()}] - {str(err)}")
             logger.warning(f"Something wrong with program. Exception: {str(err)}")
