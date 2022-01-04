@@ -1,4 +1,5 @@
 from datetime import datetime, timedelta
+from logging import handlers
 from My_Logger import logger
 
 
@@ -315,13 +316,16 @@ class ConfigManager:
             ): # current time within a day's avaliable sending time
                 # update now
                 return 0
-                
+            
             else: # current time is out of a day's avaliable sending time
-                # update in tomorrow at wkly_noti_after time
+                # assume we can update in current date
                 next_updatetime = (
                     datetime(curr_time.year, curr_time.month, curr_time.day) +
-                    timedelta(seconds=24*3600) + timedelta(seconds=wkly_noti_after)
+                    timedelta(seconds=wkly_noti_after)
                 )
+                # we cannot update in current date, update tomorrow
+                if next_updatetime <= curr_time:
+                    next_updatetime += timedelta(seconds=24*3600)
         
         # get total seconds between next notification datetime and now
         sec = int((next_updatetime - curr_time).total_seconds()) + 1
