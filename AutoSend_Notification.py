@@ -2,13 +2,24 @@ import sys
 import os
 import gc
 from My_Logger import logger
-from datetime import datetime
+from datetime import datetime, date
 
 
 
 # get current system time string fmt=%Y-%m-%d %H:%M:%S.%f
 def getSysTimeStr():
     return datetime.now().strftime("%Y-%m-%d %H:%M:%S.%f")[:-3]
+
+def isDiffWeek(date1:date, date2:date) -> bool:
+    "Wether date1 and date2 are in different week"
+    
+    d1c = date1.isocalendar()
+    d2c = date2.isocalendar()
+    
+    # has different year (idx 0) or different week (idx 1)
+    if (d1c[0] != d2c[0] or d1c[1] != d2c[1]):
+        return True
+    return False
 
 # Send Email to all people in contact_list.json
 def sendEmail2All(config, email, contact_list, message_block, subject):
@@ -154,6 +165,8 @@ def main():
             logger.info(f"\"time_to_refresh_wkly_notification\" [{(timemonitor.getDateTimeObj().date() > config.getLastNotifyTime())}] Whether current time > last notify time")
             condition_list += str(int(timemonitor.getDateTimeObj().weekday() >= config.getNotificationUpdateDay())) # current weekday >= notification update weekday
             logger.info(f"\"time_to_refresh_wkly_notification\" [{(timemonitor.getDateTimeObj().weekday() >= config.getNotificationUpdateDay())}] Whether current weekday >= notification update weekday")
+            condition_list += str(int(isDiffWeek(timemonitor.getDateTimeObj().date(), config.getLastNotifyTime()))) # whether current date & last notify time is in different week of the year
+            logger.info(f"\"time_to_refresh_wkly_notification\" [{isDiffWeek(timemonitor.getDateTimeObj().date(), config.getLastNotifyTime())}] Whether current date & last notify time is in different week of the year")
             time_to_refresh_wkly_notification_flag = int(condition_list,2) == int("1"*len(condition_list),2)
         logger.info(f"Time to refresh wkly notification status: [{time_to_refresh_wkly_notification_flag}]")
         
@@ -320,8 +333,8 @@ if __name__ == "__main__":
             except SystemExit:
                 os._exit(0)
         except ValueError as verr:
-            print(f"Exception: {verr}")
-            logger.warning(f"Exception: {verr}")
+            print(f"[{getSysTimeStr()}] - Exception: {verr}")
+            logger.warning(f"[{getSysTimeStr()}] - Exception: {verr}")
             
             # sleep for 30 min to wait for internet come back
             if "No Internet Connection" in str(verr):
