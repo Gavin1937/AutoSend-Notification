@@ -247,13 +247,13 @@ def main():
             if sermon_person != None:
                 sermon_person_msg = getFullEmailMsg(msg_str_arr[0],
                                             getSermonMsg(msg_str_arr[1], sermon_person["refer_name"]),
-                                            config.getUserNum())
+                                            config.getAdminEmailAddr())
                 if config.isEnableNotiAdmin():
                     msg2admin += "Sermon Person: " + sermon_person["name"] + ",\n\nMessage:\n" + sermon_person_msg + "\n\n"
             if worship_person != None:
                 worship_person_msg = getFullEmailMsg(msg_str_arr[0],
                                             getWorshipMsg(msg_str_arr[2], worship_person["refer_name"]),
-                                            config.getUserNum())
+                                            config.getAdminEmailAddr())
                 if config.isEnableNotiAdmin():
                     msg2admin += "Worship Person: " + worship_person["name"] + ",\n\nMessage:\n" + worship_person_msg + "\n\n"
             logger.info("Generate messages for people")
