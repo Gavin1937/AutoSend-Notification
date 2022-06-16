@@ -1,6 +1,9 @@
 
-<h1 style="color:red;font-weight:bold;">This repo is deprecated</h1>
+# This repo is deprecated
 ## [Deprecate Reason: Google no longer support 3rd-party apps use email & password to send email](https://support.google.com/accounts/answer/6010255)
+
+## You can use other scheduled notification services or check out my new repo [AutoNoti_GAS](https://github.com/Gavin1937/AutoNoti_GAS)
+
 
 # AutoSending Notification program
 
