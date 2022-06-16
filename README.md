@@ -1,3 +1,7 @@
+
+<h1 style="color:red;font-weight:bold;">This repo is deprecated</h1>
+## [Deprecate Reason: Google no longer support 3rd-party apps use email & password to send email](https://support.google.com/accounts/answer/6010255)
+
 # AutoSending Notification program
 
 This program will send notification through an email provider (like Gmail) automatically every week. 
